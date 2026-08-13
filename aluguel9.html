@@ -684,6 +684,77 @@
                 flex-wrap: wrap;
             }
         }
+
+        .owner-form {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            border-left: 4px solid #667eea;
+        }
+
+        .owner-form h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+
+        @media (min-width: 768px) {
+            .form-row {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        .form-group-owner {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group-owner label {
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: #2c3e50;
+            font-size: 0.9rem;
+        }
+
+        .form-group-owner input,
+        .form-group-owner textarea {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 0.9rem;
+            font-family: inherit;
+        }
+
+        .form-group-owner textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .form-group-owner input:focus,
+        .form-group-owner textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+        }
+
+        .form-actions .btn {
+            width: auto;
+        }
         
         .bookings-list {
             max-height: 350px;
@@ -780,6 +851,8 @@
             width: 100%;
             max-width: 450px;
             box-shadow: 0 8px 40px rgba(0, 0, 0, 0.2);
+            max-height: 90vh;
+            overflow-y: auto;
         }
 
         @media (min-width: 768px) {
@@ -1221,7 +1294,7 @@
 
                 <div class="rules-card">
                     <h2><i class="fas fa-list-check"></i> Regras da Casa</h2>
-                    <div class="rules-content">
+                    <div class="rules-content" id="rules-content-display">
                         <ul>
                             <li>Check-in a partir das 15h00</li>
                             <li>Check-out até as 11h00</li>
@@ -1241,7 +1314,6 @@
             <h2><i class="fas fa-user-tie"></i> Painel do Proprietário</h2>
             <div class="owner-controls">
                 <button class="btn btn-primary" id="btn-edit-costs"><i class="fas fa-edit"></i> Editar Custos</button>
-                <button class="btn btn-secondary" id="btn-manage-bookings"><i class="fas fa-list"></i> Gerenciar Reservas</button>
                 <button class="btn btn-secondary" id="btn-manage-rules"><i class="fas fa-file-contract"></i> Editar Regras</button>
             </div>
             <div id="owner-content"></div>
@@ -1291,6 +1363,17 @@
             internet: 20
         };
 
+        let rules = [
+            "Check-in a partir das 15h00",
+            "Check-out até as 11h00",
+            "Máximo de 6 hóspedes",
+            "Não é permitido animais de estimação",
+            "Festas e eventos não permitidos",
+            "Respeitar horários de silêncio",
+            "Manter o imóvel limpo",
+            "Documentação obrigatória"
+        ];
+
         let selectedDates = [];
         let calendar = null;
         let ownerLoggedIn = false;
@@ -1323,6 +1406,8 @@
             document.getElementById('btn-owner-login').addEventListener('click', handleOwnerLogin);
             document.getElementById('btn-owner-logout').addEventListener('click', handleOwnerLogout);
             document.getElementById('booking-form').addEventListener('submit', submitBooking);
+            document.getElementById('btn-edit-costs').addEventListener('click', showEditCostsForm);
+            document.getElementById('btn-manage-rules').addEventListener('click', showEditRulesForm);
         }
 
         function handleDateClick(info) {
@@ -1392,8 +1477,6 @@
         function submitBooking(e) {
             e.preventDefault();
             const name = document.getElementById('guest-name').value;
-            const email = document.getElementById('guest-email').value;
-            const phone = document.getElementById('guest-phone').value;
             
             showNotification(`Reserva de ${name} solicitada com sucesso!`, 'success');
             closeModal();
@@ -1412,6 +1495,7 @@
                 showNotification('Propriedade acessada com sucesso!', 'success');
             } else {
                 showNotification('Senha incorreta', 'error');
+                document.getElementById('owner-password').value = '';
             }
         }
 
@@ -1421,7 +1505,109 @@
             document.getElementById('logged-in-info').style.display = 'none';
             document.getElementById('owner-panel').style.display = 'none';
             document.getElementById('owner-password').value = '';
+            document.getElementById('owner-content').innerHTML = '';
             showNotification('Desconectado com sucesso', 'success');
+        }
+
+        function showEditCostsForm() {
+            const ownerContent = document.getElementById('owner-content');
+            ownerContent.innerHTML = `
+                <div class="owner-form">
+                    <h3><i class="fas fa-money-bill-wave"></i> Editar Custos</h3>
+                    <form id="costs-form">
+                        <div class="form-row">
+                            <div class="form-group-owner">
+                                <label for="daily-cost">Diária (R$):</label>
+                                <input type="number" id="daily-cost" value="${costs.daily}" step="0.01" required>
+                            </div>
+                            <div class="form-group-owner">
+                                <label for="cleaning-cost">Limpeza (R$):</label>
+                                <input type="number" id="cleaning-cost" value="${costs.cleaning}" step="0.01" required>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group-owner">
+                                <label for="service-cost">Serviço (R$):</label>
+                                <input type="number" id="service-cost" value="${costs.service}" step="0.01" required>
+                            </div>
+                            <div class="form-group-owner">
+                                <label for="internet-cost">Internet (R$):</label>
+                                <input type="number" id="internet-cost" value="${costs.internet}" step="0.01" required>
+                            </div>
+                        </div>
+                        <div class="form-actions">
+                            <button type="button" class="btn btn-cancel" onclick="document.getElementById('owner-content').innerHTML = ''"><i class="fas fa-times"></i> Cancelar</button>
+                            <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Salvar Custos</button>
+                        </div>
+                    </form>
+                </div>
+            `;
+
+            document.getElementById('costs-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                costs.daily = parseFloat(document.getElementById('daily-cost').value);
+                costs.cleaning = parseFloat(document.getElementById('cleaning-cost').value);
+                costs.service = parseFloat(document.getElementById('service-cost').value);
+                costs.internet = parseFloat(document.getElementById('internet-cost').value);
+                
+                updateCostsDisplay();
+                document.getElementById('owner-content').innerHTML = '';
+                showNotification('Custos atualizados com sucesso!', 'success');
+            });
+        }
+
+        function showEditRulesForm() {
+            const ownerContent = document.getElementById('owner-content');
+            let rulesHTML = `
+                <div class="owner-form">
+                    <h3><i class="fas fa-list-check"></i> Editar Regras da Casa</h3>
+                    <form id="rules-form">
+                        <div class="form-row" style="grid-template-columns: 1fr; gap: 8px;">
+            `;
+
+            rules.forEach((rule, index) => {
+                rulesHTML += `
+                    <div class="form-group-owner">
+                        <input type="text" class="rule-input" data-index="${index}" value="${rule}" required>
+                    </div>
+                `;
+            });
+
+            rulesHTML += `
+                        </div>
+                        <div class="form-actions">
+                            <button type="button" class="btn btn-cancel" onclick="document.getElementById('owner-content').innerHTML = ''"><i class="fas fa-times"></i> Cancelar</button>
+                            <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Salvar Regras</button>
+                        </div>
+                    </form>
+                </div>
+            `;
+
+            ownerContent.innerHTML = rulesHTML;
+
+            document.getElementById('rules-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                const ruleInputs = document.querySelectorAll('.rule-input');
+                rules = [];
+                ruleInputs.forEach(input => {
+                    if (input.value.trim()) {
+                        rules.push(input.value.trim());
+                    }
+                });
+                
+                updateRulesDisplay();
+                document.getElementById('owner-content').innerHTML = '';
+                showNotification('Regras atualizadas com sucesso!', 'success');
+            });
+        }
+
+        function updateRulesDisplay() {
+            let rulesHTML = '<ul>';
+            rules.forEach(rule => {
+                rulesHTML += `<li>${rule}</li>`;
+            });
+            rulesHTML += '</ul>';
+            document.getElementById('rules-content-display').innerHTML = rulesHTML;
         }
 
         function showNotification(message, type) {
