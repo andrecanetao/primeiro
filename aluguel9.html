@@ -1,1644 +1,1190 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aluguel de Apartamento no Litoral</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/main.min.css" rel="stylesheet">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Aluguel de Apartamento</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/main.min.css" rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        
-        body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: #333;
-            line-height: 1.6;
-            padding: 10px;
-            min-height: 100vh;
-        }
-        
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-        
-        header {
-            background: rgba(255, 255, 255, 0.98);
-            border-radius: 15px;
-            padding: 15px;
-            margin-bottom: 15px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-
-        @media (min-width: 768px) {
-            header {
-                flex-direction: row;
-                justify-content: space-between;
-                align-items: center;
-                padding: 20px;
-                gap: 20px;
-            }
-        }
-        
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            flex: 1;
-        }
-        
-        .logo i {
-            font-size: 2rem;
-            color: #667eea;
-        }
-
-        @media (min-width: 768px) {
-            .logo i {
-                font-size: 2.5rem;
-            }
-        }
-        
-        .logo h1 {
-            font-size: 1.3rem;
-            color: #2c3e50;
-            font-weight: 700;
-        }
-
-        @media (min-width: 768px) {
-            .logo h1 {
-                font-size: 1.8rem;
-            }
-        }
-        
-        .logo p {
-            color: #7f8c8d;
-            font-size: 0.85rem;
-        }
-
-        @media (min-width: 768px) {
-            .logo p {
-                font-size: 1rem;
-            }
-        }
-
-        .owner-info {
-            text-align: center;
-            font-size: 0.85rem;
-            color: #555;
-        }
-
-        @media (min-width: 768px) {
-            .owner-info {
-                text-align: right;
-                font-size: 0.95rem;
-            }
-        }
-
-        .owner-info p {
-            margin: 5px 0;
-        }
-
-        .owner-info i {
-            margin-right: 5px;
-            color: #667eea;
-        }
-        
-        .owner-login {
-            width: 100%;
-        }
-
-        @media (min-width: 768px) {
-            .owner-login {
-                width: auto;
-            }
-        }
-        
-        .owner-login-form {
-            background: rgba(102, 126, 234, 0.1);
-            padding: 10px;
-            border-radius: 8px;
-            display: flex;
-            gap: 8px;
-            flex-direction: column;
-        }
-
-        @media (min-width: 768px) {
-            .owner-login-form {
-                flex-direction: row;
-            }
-        }
-        
-        .owner-login-form input {
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            font-size: 0.9rem;
-            flex: 1;
-        }
-        
-        .owner-login-form button {
-            background: #667eea;
-            color: white;
-            border: none;
-            padding: 10px 15px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-weight: bold;
-            font-size: 0.9rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 5px;
-            transition: all 0.3s ease;
-            white-space: nowrap;
-        }
-
-        @media (min-width: 768px) {
-            .owner-login-form button {
-                padding: 10px 20px;
-            }
-        }
-        
-        .owner-login-form button:hover {
-            background: #764ba2;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
-        }
-        
-        .owner-logged-in {
-            background: rgba(102, 126, 234, 0.15);
-            padding: 10px;
-            border-radius: 5px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            flex-wrap: wrap;
-            font-size: 0.9rem;
-        }
-        
-        .owner-logged-in i {
-            color: #667eea;
-        }
-
-        .instructions {
-            background: rgba(255, 255, 255, 0.98);
-            border-radius: 15px;
-            padding: 15px;
-            margin-bottom: 15px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-            border-left: 4px solid #667eea;
-        }
-
-        @media (min-width: 768px) {
-            .instructions {
-                padding: 20px;
-            }
-        }
-        
-        .instructions h3 {
-            color: #667eea;
-            margin-bottom: 12px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 1.1rem;
-        }
-        
-        .instructions ol {
-            margin-left: 20px;
-            line-height: 1.8;
-            font-size: 0.95rem;
-        }
-
-        .content-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 15px;
-            margin-bottom: 15px;
-        }
-
-        @media (min-width: 768px) {
-            .content-grid {
-                grid-template-columns: 1.5fr 1fr;
-                gap: 20px;
-            }
-        }
-        
-        .calendar-resumo {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 15px;
-        }
-
-        @media (min-width: 768px) {
-            .calendar-resumo {
-                grid-template-columns: 1fr 1fr;
-                gap: 20px;
-            }
-        }
-        
-        .calendar-card {
-            background: rgba(255, 255, 255, 0.98);
-            border-radius: 15px;
-            padding: 15px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-            height: 100%;
-        }
-
-        @media (min-width: 768px) {
-            .calendar-card {
-                padding: 20px;
-            }
-        }
-        
-        .calendar-header {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            margin-bottom: 15px;
-        }
-
-        @media (min-width: 768px) {
-            .calendar-header {
-                flex-direction: row;
-                justify-content: space-between;
-                align-items: center;
-            }
-        }
-        
-        .calendar-header h2 {
-            color: #667eea;
-            font-size: 1.2rem;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        @media (min-width: 768px) {
-            .calendar-header h2 {
-                font-size: 1.4rem;
-            }
-        }
-        
-        .calendar-controls {
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-            justify-content: center;
-        }
-
-        @media (min-width: 768px) {
-            .calendar-controls {
-                justify-content: flex-end;
-            }
-        }
-        
-        .calendar-controls button {
-            background: #667eea;
-            color: white;
-            border: none;
-            padding: 8px 12px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            font-size: 0.85rem;
-            transition: all 0.3s ease;
-            white-space: nowrap;
-        }
-
-        @media (min-width: 768px) {
-            .calendar-controls button {
-                padding: 10px 15px;
-                font-size: 0.9rem;
-            }
-        }
-        
-        .calendar-controls button:hover {
-            background: #764ba2;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
-        }
-        
-        #calendar {
-            background: white;
-            border-radius: 8px;
-            padding: 10px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-            font-size: 0.9rem;
-        }
-
-        @media (min-width: 768px) {
-            #calendar {
-                padding: 15px;
-                font-size: 1rem;
-            }
-        }
-        
-        .status-indicators {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 10px;
-            margin-top: 15px;
-        }
-
-        @media (min-width: 768px) {
-            .status-indicators {
-                display: flex;
-                gap: 20px;
-                flex-wrap: wrap;
-            }
-        }
-        
-        .status-item {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 0.85rem;
-        }
-
-        @media (min-width: 768px) {
-            .status-item {
-                font-size: 0.95rem;
-            }
-        }
-        
-        .status-color {
-            width: 20px;
-            height: 20px;
-            border-radius: 4px;
-            flex-shrink: 0;
-        }
-        
-        .available {
-            background: #ecf0f1;
-        }
-        
-        .selected {
-            background: #667eea;
-        }
-        
-        .unavailable {
-            background: #e74c3c;
-        }
-        
-        .pending {
-            background: #f39c12;
-        }
-        
-        .confirmed {
-            background: #27ae60;
-        }
-
-        .booking-summary {
-            background: rgba(255, 255, 255, 0.98);
-            border-radius: 15px;
-            padding: 15px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-        }
-
-        @media (min-width: 768px) {
-            .booking-summary {
-                padding: 20px;
-            }
-        }
-
-        .booking-summary h2 {
-            color: #667eea;
-            margin-bottom: 15px;
-            font-size: 1.2rem;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        @media (min-width: 768px) {
-            .booking-summary h2 {
-                font-size: 1.3rem;
-            }
-        }
-        
-        .price-details {
-            margin: 15px 0;
-            padding: 15px;
-            background: #f8f9fa;
-            border-radius: 8px;
-        }
-        
-        .price-row {
-            display: flex;
-            justify-content: space-between;
-            padding: 10px 0;
-            border-bottom: 1px solid #eee;
-            font-size: 0.95rem;
-        }
-
-        @media (min-width: 768px) {
-            .price-row {
-                font-size: 1rem;
-            }
-        }
-        
-        .price-row.total {
-            font-weight: bold;
-            font-size: 1.1rem;
-            border-top: 2px solid #667eea;
-            border-bottom: none;
-            margin-top: 10px;
-            padding-top: 15px;
-            color: #667eea;
-        }
-
-        @media (min-width: 768px) {
-            .price-row.total {
-                font-size: 1.3rem;
-            }
-        }
-        
-        .card {
-            background: rgba(255, 255, 255, 0.98);
-            border-radius: 15px;
-            padding: 15px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-            transition: all 0.3s ease;
-        }
-
-        @media (min-width: 768px) {
-            .card {
-                padding: 20px;
-            }
-        }
-        
-        .card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
-        }
-        
-        .card h2 {
-            color: #667eea;
-            margin-bottom: 15px;
-            padding-bottom: 12px;
-            border-bottom: 2px solid #eee;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 1.2rem;
-        }
-
-        @media (min-width: 768px) {
-            .card h2 {
-                font-size: 1.3rem;
-            }
-        }
-        
-        .costs-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-            gap: 12px;
-            margin-bottom: 15px;
-        }
-
-        @media (min-width: 768px) {
-            .costs-grid {
-                grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-                gap: 15px;
-            }
-        }
-        
-        .cost-item {
-            background: linear-gradient(135deg, rgba(102, 126, 234, 0.05), rgba(118, 75, 162, 0.05));
-            padding: 12px;
-            border-radius: 8px;
-            text-align: center;
-            transition: all 0.3s ease;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-            border: 1px solid rgba(102, 126, 234, 0.2);
-        }
-
-        @media (min-width: 768px) {
-            .cost-item {
-                padding: 15px;
-            }
-        }
-        
-        .cost-item:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.2);
-            border-color: #667eea;
-        }
-        
-        .cost-item i {
-            font-size: 1.8rem;
-            color: #667eea;
-            margin-bottom: 8px;
-        }
-        
-        .cost-item h3 {
-            font-size: 0.9rem;
-            margin-bottom: 5px;
-            color: #2c3e50;
-            font-weight: 600;
-        }
-
-        @media (min-width: 768px) {
-            .cost-item h3 {
-                font-size: 1rem;
-            }
-        }
-        
-        .cost-item p {
-            font-size: 1.1rem;
-            font-weight: bold;
-            color: #667eea;
-        }
-
-        @media (min-width: 768px) {
-            .cost-item p {
-                font-size: 1.2rem;
-            }
-        }
-        
-        .actions {
-            margin-top: 15px;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        @media (min-width: 768px) {
-            .actions {
-                flex-direction: row;
-                justify-content: space-between;
-                gap: 10px;
-            }
-        }
-        
-        .btn {
-            padding: 12px 20px;
-            border: none;
-            border-radius: 8px;
-            font-weight: 600;
-            cursor: pointer;
-            font-size: 0.95rem;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            width: 100%;
-        }
-
-        @media (min-width: 768px) {
-            .btn {
-                width: auto;
-                padding: 12px 25px;
-            }
-        }
-        
-        .btn-primary {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
-        }
-        
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
-        }
-        
-        .btn-secondary {
-            background: rgba(102, 126, 234, 0.2);
-            color: #667eea;
-            border: 2px solid #667eea;
-        }
-        
-        .btn-secondary:hover {
-            background: #667eea;
-            color: white;
-            transform: translateY(-2px);
-        }
-        
-        .btn-cancel {
-            background: #e74c3c;
-            color: white;
-        }
-        
-        .btn-cancel:hover {
-            background: #c0392b;
-            transform: translateY(-2px);
-        }
-
-        .owner-panel {
-            background: rgba(255, 255, 255, 0.98);
-            border-radius: 15px;
-            padding: 15px;
-            margin-top: 15px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-            display: none;
-            border: 2px solid #764ba2;
-        }
-
-        @media (min-width: 768px) {
-            .owner-panel {
-                padding: 20px;
-            }
-        }
-        
-        .owner-panel h2 {
-            color: #764ba2;
-            margin-bottom: 15px;
-            padding-bottom: 12px;
-            border-bottom: 2px solid #eee;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 1.2rem;
-        }
-
-        @media (min-width: 768px) {
-            .owner-panel h2 {
-                font-size: 1.3rem;
-            }
-        }
-        
-        .owner-controls {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            margin-bottom: 15px;
-        }
-
-        @media (min-width: 768px) {
-            .owner-controls {
-                flex-direction: row;
-                flex-wrap: wrap;
-            }
-        }
-
-        .owner-form {
-            background: #f8f9fa;
-            padding: 15px;
-            border-radius: 8px;
-            margin-top: 15px;
-            border-left: 4px solid #667eea;
-        }
-
-        .owner-form h3 {
-            color: #667eea;
-            margin-bottom: 15px;
-            font-size: 1.1rem;
-        }
-
-        .form-row {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 12px;
-            margin-bottom: 15px;
-        }
-
-        @media (min-width: 768px) {
-            .form-row {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
-
-        .form-group-owner {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .form-group-owner label {
-            font-weight: 600;
-            margin-bottom: 5px;
-            color: #2c3e50;
-            font-size: 0.9rem;
-        }
-
-        .form-group-owner input,
-        .form-group-owner textarea {
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            font-size: 0.9rem;
-            font-family: inherit;
-        }
-
-        .form-group-owner textarea {
-            min-height: 100px;
-            resize: vertical;
-        }
-
-        .form-group-owner input:focus,
-        .form-group-owner textarea:focus {
-            outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-        }
-
-        .form-actions {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-            justify-content: flex-end;
-        }
-
-        .form-actions .btn {
-            width: auto;
-        }
-        
-        .bookings-list {
-            max-height: 350px;
-            overflow-y: auto;
-            border: 1px solid #eee;
-            border-radius: 8px;
-            padding: 12px;
-            background: #f8f9fa;
-        }
-
-        @media (min-width: 768px) {
-            .bookings-list {
-                padding: 15px;
-            }
-        }
-        
-        .booking-item {
-            padding: 12px;
-            border-bottom: 1px solid #eee;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        @media (min-width: 768px) {
-            .booking-item {
-                flex-direction: row;
-                justify-content: space-between;
-                align-items: center;
-            }
-        }
-        
-        .booking-item:last-child {
-            border-bottom: none;
-        }
-        
-        .booking-actions {
-            display: flex;
-            gap: 8px;
-            width: 100%;
-        }
-
-        @media (min-width: 768px) {
-            .booking-actions {
-                width: auto;
-            }
-        }
-
-        .booking-actions .btn {
-            padding: 6px 10px;
-            font-size: 0.8rem;
-            flex: 1;
-        }
-
-        @media (min-width: 768px) {
-            .booking-actions .btn {
-                flex: none;
-                width: auto;
-            }
-        }
-
-        .modal-actions {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            margin-top: 15px;
-        }
-
-        @media (min-width: 768px) {
-            .modal-actions {
-                flex-direction: row;
-                justify-content: space-between;
-            }
-        }
-        
-        .confirmation-modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 1000;
-            justify-content: center;
-            align-items: center;
-            padding: 10px;
-        }
-        
-        .modal-content {
-            background: white;
-            padding: 20px;
-            border-radius: 12px;
-            width: 100%;
-            max-width: 450px;
-            box-shadow: 0 8px 40px rgba(0, 0, 0, 0.2);
-            max-height: 90vh;
-            overflow-y: auto;
-        }
-
-        @media (min-width: 768px) {
-            .modal-content {
-                padding: 30px;
-            }
-        }
-        
-        .modal-content h3 {
-            color: #667eea;
-            margin-bottom: 15px;
-            text-align: center;
-            font-size: 1.2rem;
-        }
-        
-        .form-group {
-            margin-bottom: 15px;
-        }
-        
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            color: #2c3e50;
-            font-size: 0.95rem;
-        }
-
-        @media (min-width: 768px) {
-            .form-group label {
-                font-size: 1rem;
-            }
-        }
-        
-        .form-group input {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            font-size: 0.95rem;
-            transition: border-color 0.3s ease;
-        }
-
-        @media (min-width: 768px) {
-            .form-group input {
-                padding: 12px;
-                font-size: 1rem;
-            }
-        }
-
-        .form-group input:focus {
-            outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-        }
-
-        .notification {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            padding: 15px 20px;
-            border-radius: 8px;
-            color: white;
-            font-weight: 600;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-            display: none;
-            z-index: 2000;
-            animation: slideIn 0.3s ease;
-        }
-
-        @keyframes slideIn {
-            from {
-                transform: translateX(400px);
-                opacity: 0;
-            }
-            to {
-                transform: translateX(0);
-                opacity: 1;
-            }
-        }
-        
-        .success {
-            background: linear-gradient(135deg, #27ae60, #229954);
-        }
-        
-        .error {
-            background: linear-gradient(135deg, #e74c3c, #c0392b);
-        }
-
-        .gallery-card {
-            background: rgba(255, 255, 255, 0.98);
-            border-radius: 15px;
-            padding: 15px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-            margin-top: 15px;
-        }
-
-        @media (min-width: 768px) {
-            .gallery-card {
-                padding: 20px;
-            }
-        }
-
-        .gallery-card h2 {
-            color: #667eea;
-            margin-bottom: 15px;
-            font-size: 1.2rem;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        @media (min-width: 768px) {
-            .gallery-card h2 {
-                font-size: 1.3rem;
-            }
-        }
-
-        .gallery-container {
-            position: relative;
-            height: 250px;
-            overflow: hidden;
-            border-radius: 10px;
-            margin-top: 10px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-        }
-
-        @media (min-width: 768px) {
-            .gallery-container {
-                height: 300px;
-            }
-        }
-
-        .gallery-slide {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            opacity: 0;
-            transition: opacity 0.5s ease;
-            background-size: cover;
-            background-position: center;
-        }
-
-        .gallery-slide.active {
-            opacity: 1;
-        }
-
-        .gallery-dots {
-            display: flex;
-            justify-content: center;
-            gap: 8px;
-            margin-top: 12px;
-        }
-
-        .gallery-dot {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            background: #ddd;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .gallery-dot:hover {
-            background: #bbb;
-        }
-
-        .gallery-dot.active {
-            background: #667eea;
-            width: 12px;
-            height: 12px;
-        }
-
-        .rules-card {
-            background: rgba(255, 255, 255, 0.98);
-            border-radius: 15px;
-            padding: 15px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-            margin-top: 15px;
-        }
-
-        @media (min-width: 768px) {
-            .rules-card {
-                padding: 20px;
-            }
-        }
-
-        .rules-card h2 {
-            color: #667eea;
-            margin-bottom: 15px;
-            font-size: 1.2rem;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        @media (min-width: 768px) {
-            .rules-card h2 {
-                font-size: 1.3rem;
-            }
-        }
-
-        .rules-content {
-            margin-top: 12px;
-            padding: 12px;
-            background: #f8f9fa;
-            border-radius: 8px;
-            max-height: 200px;
-            overflow-y: auto;
-            border-left: 4px solid #667eea;
-        }
-
-        @media (min-width: 768px) {
-            .rules-content {
-                padding: 15px;
-            }
-        }
-
-        .rules-content ul {
-            padding-left: 20px;
-            font-size: 0.95rem;
-        }
-
-        @media (min-width: 768px) {
-            .rules-content ul {
-                font-size: 1rem;
-            }
-        }
-
-        .rules-content li {
-            margin-bottom: 8px;
-        }
-
-        footer {
-            text-align: center;
-            margin-top: 20px;
-            color: rgba(255, 255, 255, 0.8);
-            font-size: 0.85rem;
-            padding: 15px;
-        }
-
-        @media (min-width: 768px) {
-            footer {
-                margin-top: 30px;
-                font-size: 0.9rem;
-            }
-        }
-
-        /* Estilos do FullCalendar */
-        .fc {
-            font-size: 0.9rem;
-        }
-
-        @media (min-width: 768px) {
-            .fc {
-                font-size: 1rem;
-            }
-        }
-
-        .fc-daygrid-day {
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-
-        .fc-daygrid-day:hover {
-            background-color: #f0f8ff !important;
-        }
-
-        .fc .fc-daygrid-day.fc-day-today {
-            background-color: #fff3cd !important;
-            font-weight: bold;
-        }
-
-        .fc-button-primary {
-            background-color: #667eea !important;
-            border-color: #667eea !important;
-        }
-
-        .fc-button-primary:not(:disabled).fc-button-active {
-            background-color: #764ba2 !important;
-            border-color: #764ba2 !important;
-        }
-
-        .fc-button-primary:hover {
-            background-color: #764ba2 !important;
-        }
+        /* ===== TODOS OS ESTILOS IGUAIS AO ANTERIOR ===== */
+        *{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',system-ui,sans-serif}
+        body{background:linear-gradient(145deg,#f0f7ff,#d9e2f0);min-height:100vh;padding:20px;color:#1e293b}
+        .container{max-width:1280px;margin:0 auto}
+        header{background:rgba(255,255,255,0.85);backdrop-filter:blur(12px);border-radius:24px;padding:20px 30px;margin-bottom:24px;box-shadow:0 8px 32px rgba(0,0,0,0.06);display:flex;flex-wrap:wrap;align-items:center;gap:20px}
+        .logo{display:flex;align-items:center;gap:16px;flex:1 1 200px}.logo i{font-size:2.4rem;color:#0b6b8a}.logo h1{font-size:1.6rem;font-weight:700;color:#0f2b3d}.logo p{color:#475569;font-size:0.9rem}
+        .owner-login{margin-left:auto}
+        .owner-login-form{display:flex;gap:8px;background:#f1f5f9;padding:6px 12px 6px 16px;border-radius:40px;align-items:center;flex-wrap:wrap}
+        .owner-login-form input{border:none;background:transparent;padding:8px 0;font-size:0.95rem;outline:none;min-width:120px}
+        .owner-login-form button{background:#0b6b8a;color:#fff;border:none;padding:8px 18px;border-radius:40px;font-weight:600;cursor:pointer;transition:0.2s}
+        .owner-login-form button:hover{background:#09536b}
+        .owner-logged-in{display:flex;align-items:center;gap:12px;background:#e6f0f5;padding:8px 20px 8px 16px;border-radius:40px}
+        .owner-logged-in .btn-cancel{background:#b91c1c;color:#fff;border:none;padding:6px 14px;border-radius:30px;cursor:pointer;font-weight:600}
+        .owner-logged-in .btn-cancel:hover{background:#991b1b}
+        .content-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:24px}
+        @media(max-width:1000px){.content-grid{grid-template-columns:1fr}}
+        .calendar-card,.booking-summary,.card,.gallery-card,.rules-card,.owner-panel{background:white;border-radius:24px;padding:24px;box-shadow:0 8px 32px rgba(0,0,0,0.06)}
+        .calendar-header{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;margin-bottom:16px}
+        .calendar-header h2{color:#0b6b8a;font-size:1.3rem;display:flex;align-items:center;gap:8px}
+        .calendar-header h2 .month-display{font-size:0.9rem;font-weight:400;margin-left:8px;color:#475569}
+        .calendar-controls{display:flex;gap:8px}
+        .calendar-controls button{background:#f1f5f9;border:none;padding:8px 16px;border-radius:30px;font-weight:600;color:#1e293b;cursor:pointer;transition:0.2s}
+        .calendar-controls button:hover{background:#e2e8f0}
+        .fc-daygrid-body tr:nth-child(even){background-color:rgba(225,235,245,0.5)}
+        .fc-daygrid-body tr:nth-child(odd){background-color:rgba(240,246,252,0.3)}
+        .fc-daygrid-day{cursor:pointer}
+        .fc-daygrid-day-number{font-weight:600}
+        .fc-daygrid-day.fc-day-sat,.fc-daygrid-day.fc-day-sun{background-color:rgba(251,191,36,0.08)!important}
+        .fc-daygrid-day.fc-day-past{opacity:0.5;cursor:not-allowed!important}
+        .fc-daygrid-day.fc-day-blocked{opacity:0.6;cursor:not-allowed!important}
+        .price-details{background:#f8fafc;border-radius:16px;padding:16px}
+        .price-row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #e2e8f0}
+        .price-row.total{border-top:2px solid #0b6b8a;border-bottom:none;margin-top:8px;padding-top:14px;font-weight:700;color:#0b6b8a}
+        .price-row.discount{color:#15803d;background:#dcfce7;border-radius:8px;padding:8px 12px;margin:4px 0}
+        .price-row.surcharge{color:#b91c1c;background:#fee2e2;border-radius:8px;padding:8px 12px;margin:4px 0}
+        .discount-badge{background:#15803d;color:white;padding:2px 10px;border-radius:20px;font-size:0.8rem}
+        .surcharge-badge{background:#b91c1c;color:white;padding:2px 10px;border-radius:20px;font-size:0.8rem}
+        .btn{padding:12px 28px;border:none;border-radius:40px;font-weight:600;cursor:pointer;transition:all 0.2s;display:inline-flex;align-items:center;gap:8px}
+        .btn-primary{background:#0b6b8a;color:white}
+        .btn-primary:hover{background:#09536b;transform:translateY(-2px);box-shadow:0 8px 20px rgba(11,107,138,0.3)}
+        .btn-secondary{background:#e2e8f0;color:#1e293b}
+        .btn-secondary:hover{background:#cbd5e1}
+        .btn-cancel{background:#b91c1c;color:white}
+        .btn-cancel:hover{background:#991b1b}
+        .btn-success{background:#15803d;color:white}
+        .btn-success:hover{background:#166534}
+        .btn-toggle{background:#f1f5f9;color:#1e293b;border:2px solid #cbd5e1}
+        .btn-toggle.active{background:#0b6b8a;color:white;border-color:#0b6b8a}
+        .btn-toggle.active:hover{background:#09536b}
+        .costs-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+        .cost-item{background:#f8fafc;padding:16px;border-radius:12px;text-align:center;border:1px solid #e2e8f0}
+        .cost-item i{font-size:2rem;color:#0b6b8a}
+        .cost-item h3{font-size:0.9rem;margin:6px 0 4px}
+        .cost-item p{font-weight:700;color:#0b6b8a}
+        .gallery-container{position:relative;border-radius:16px;overflow:hidden;background:#f1f5f9;aspect-ratio:16/9;margin:12px 0}
+        .gallery-slide{position:absolute;top:0;left:0;width:100%;height:100%;opacity:0;transition:opacity 0.6s ease;display:flex;align-items:center;justify-content:center;background-size:cover;background-position:center}
+        .gallery-slide.active{opacity:1}
+        .gallery-btn{position:absolute;top:50%;transform:translateY(-50%);background:rgba(255,255,255,0.7);border:none;width:40px;height:40px;border-radius:50%;font-size:1.2rem;cursor:pointer;z-index:5;transition:0.2s}
+        .gallery-btn:hover{background:white}
+        .gallery-btn.prev{left:12px}
+        .gallery-btn.next{right:12px}
+        .gallery-dots{display:flex;justify-content:center;gap:8px;margin-top:12px}
+        .gallery-dot{width:10px;height:10px;border-radius:50%;background:#cbd5e1;cursor:pointer;transition:0.2s}
+        .gallery-dot.active{background:#0b6b8a;width:14px;height:14px}
+        .owner-panel{display:none;margin-top:24px;border:2px solid #0b6b8a}
+        .owner-controls{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:20px}
+        .owner-controls .btn{flex:0 1 auto}
+        .owner-controls .btn.active-tab{background:#0b6b8a;color:white}
+        .owner-form{background:#f8fafc;padding:20px;border-radius:16px;margin-top:16px}
+        .form-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
+        @media(max-width:600px){.form-row{grid-template-columns:1fr}}
+        .form-group-owner{display:flex;flex-direction:column}
+        .form-group-owner label{font-weight:600;margin-bottom:4px;font-size:0.9rem}
+        .form-group-owner input,.form-group-owner select,.form-group-owner textarea{padding:10px 14px;border:1px solid #e2e8f0;border-radius:12px;font-size:0.95rem;outline:none;background:white}
+        .form-group-owner input:focus{border-color:#0b6b8a;box-shadow:0 0 0 3px rgba(11,107,138,0.15)}
+        .form-actions{display:flex;gap:12px;justify-content:flex-end;margin-top:12px}
+        .bookings-list{max-height:400px;overflow-y:auto;border:1px solid #e2e8f0;border-radius:12px;padding:8px;background:#f8fafc}
+        .booking-item{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;padding:12px 16px;border-bottom:1px solid #e2e8f0}
+        .booking-item:last-child{border-bottom:none}
+        .status-pending{color:#b45309;font-weight:600}
+        .status-confirmed{color:#15803d;font-weight:600}
+        .status-canceled{color:#b91c1c;font-weight:600}
+        .confirmation-modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.4);backdrop-filter:blur(4px);z-index:1000;justify-content:center;align-items:center;padding:20px}
+        .modal-content{background:white;border-radius:24px;padding:32px;max-width:480px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,0.2)}
+        .modal-content h3{color:#0b6b8a;text-align:center;margin-bottom:20px}
+        .form-group{margin-bottom:16px}
+        .form-group label{display:block;font-weight:600;margin-bottom:4px}
+        .form-group input{width:100%;padding:10px 14px;border:1px solid #e2e8f0;border-radius:12px;font-size:0.95rem}
+        .modal-actions{display:flex;gap:12px;margin-top:20px;justify-content:flex-end}
+        .notification{position:fixed;top:24px;right:24px;padding:14px 24px;border-radius:40px;color:white;font-weight:600;box-shadow:0 8px 24px rgba(0,0,0,0.15);z-index:2000;display:none;align-items:center;gap:12px;animation:slideIn 0.3s ease}
+        @keyframes slideIn{from{transform:translateX(120%);opacity:0}to{transform:translateX(0);opacity:1}}
+        .success{background:#0b6b8a}
+        .error{background:#b91c1c}
+        .notif-close{background:none;border:none;color:white;cursor:pointer;font-weight:bold;font-size:1.1rem;padding:0 4px}
+        .rules-content ul{padding-left:20px;line-height:1.8}
+        .holiday-badge{font-size:0.7rem;margin-left:4px}
+        .selection-info{display:flex;flex-wrap:wrap;gap:12px;background:#f1f5f9;padding:16px;border-radius:12px;margin-bottom:16px}
+        .selection-info span{font-weight:600}
+        .weather-icon{font-size:0.7rem;margin-left:4px}
+        .status-badge{padding:2px 10px;border-radius:20px;font-size:0.75rem;font-weight:600}
+        .status-badge.pending{background:#fef3c7;color:#b45309}
+        .status-badge.confirmed{background:#dcfce7;color:#15803d}
+        .status-badge.canceled{background:#fee2e2;color:#b91c1c}
+        .service-toggle-area{display:flex;align-items:center;gap:12px;background:#f8fafc;padding:12px 16px;border-radius:12px;margin-top:8px;border:1px solid #e2e8f0}
+        .service-toggle-area label{font-weight:600;font-size:0.9rem;color:#1e293b}
+        .service-toggle-area .toggle-desc{font-size:0.8rem;color:#64748b;margin-left:8px}
+        /* REMOVER INTERNET COMPLETAMENTE */
+        .internet, [id*="internet"], #internet-cost { display: none !important; }
+        @media(max-width:640px){header{flex-direction:column;align-items:stretch}.owner-login{margin-left:0}.owner-login-form{flex-wrap:wrap;justify-content:center}.form-row{grid-template-columns:1fr}.selection-info{flex-direction:column;align-items:center}}
     </style>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <div class="logo">
-                <i class="fas fa-umbrella-beach"></i>
-                <div>
-                    <h1>Seu Apartamento no Litoral</h1>
-                    <p>Sistema de Aluguel Inteligente</p>
-                </div>
-            </div>
-            <div class="owner-info">
-                <p><i class="fas fa-user"></i> Proprietário: Você</p>
-                <p><i class="fas fa-map-marker-alt"></i> Localização: Praia Encantada</p>
-            </div>
-            <div class="owner-login" id="owner-login-container">
-                <div class="owner-login-form" id="login-form">
-                    <input type="password" id="owner-password" placeholder="Senha do proprietário">
-                    <button id="btn-owner-login"><i class="fas fa-lock"></i> Entrar</button>
-                </div>
-                <div class="owner-logged-in" id="logged-in-info" style="display: none;">
-                    <i class="fas fa-user-shield"></i>
-                    <span>Proprietário logado</span>
-                    <button id="btn-owner-logout" class="btn btn-cancel" style="padding: 8px 12px; margin-left: 10px;">
-                        <i class="fas fa-sign-out-alt"></i> Sair
-                    </button>
-                </div>
-            </div>
-        </header>
-        
-        <div class="instructions">
-            <h3><i class="fas fa-info-circle"></i> Como usar o sistema</h3>
-            <ol>
-                <li>Selecione as datas desejadas no calendário</li>
-                <li>Clique em "Calcular" para ver o valor da hospedagem</li>
-                <li>Preencha seus dados e solicite a reserva</li>
-                <li>Proprietários podem gerenciar reservas e custos após login</li>
-            </ol>
-        </div>
-        
-        <div class="content-grid">
-            <!-- Coluna da esquerda: Calendário -->
-            <div class="calendar-resumo">
-                <div class="calendar-card">
-                    <div class="calendar-header">
-                        <h2><i class="fas fa-calendar-alt"></i> Calendário de Disponibilidade</h2>
-                        <div class="calendar-controls">
-                            <button id="prev-month"><i class="fas fa-chevron-left"></i> Anterior</button>
-                            <button id="today">Hoje</button>
-                            <button id="next-month">Próximo <i class="fas fa-chevron-right"></i></button>
-                        </div>
-                    </div>
-                    
-                    <div id="calendar"></div>
-                    
-                    <div class="status-indicators">
-                        <div class="status-item">
-                            <div class="status-color available"></div>
-                            <span>Disponível</span>
-                        </div>
-                        <div class="status-item">
-                            <div class="status-color selected"></div>
-                            <span>Selecionado</span>
-                        </div>
-                        <div class="status-item">
-                            <div class="status-color unavailable"></div>
-                            <span>Indisponível</span>
-                        </div>
-                        <div class="status-item">
-                            <div class="status-color confirmed"></div>
-                            <span>Confirmado</span>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="booking-summary">
-                    <h2><i class="fas fa-receipt"></i> Resumo da Reserva</h2>
-                    <div id="rented-days-display" style="display: none;">
-                        <div style="background: rgba(102, 126, 234, 0.1); padding: 12px; border-radius: 8px; text-align: center; margin-bottom: 15px; border-left: 4px solid #667eea;">
-                            <div style="font-weight: bold; color: #667eea; font-size: 1.2rem;">
-                                <span id="selected-days">0</span> noites
-                            </div>
-                        </div>
-                    </div>
-                    <div class="price-details">
-                        <div class="price-row">
-                            <span>Diária:</span>
-                            <span id="daily-rate">R$ 0,00</span>
-                        </div>
-                        <div class="price-row">
-                            <span>Taxa de Limpeza:</span>
-                            <span id="cleaning-fee">R$ 0,00</span>
-                        </div>
-                        <div class="price-row">
-                            <span>Taxa de Serviço:</span>
-                            <span id="service-fee">R$ 0,00</span>
-                        </div>
-                        <div class="price-row total">
-                            <span>Total:</span>
-                            <span id="total-price">R$ 0,00</span>
-                        </div>
-                    </div>
-                    <div class="actions">
-                        <button class="btn btn-primary" id="btn-calculate"><i class="fas fa-calculator"></i> Calcular</button>
-                        <button class="btn btn-secondary" id="btn-book"><i class="fas fa-check"></i> Reservar</button>
-                    </div>
-                </div>
-            </div>
+<div class="container">
 
-            <!-- Coluna da direita: Custos -->
+    <header>
+        <div class="logo">
+            <i class="fas fa-umbrella-beach"></i>
             <div>
-                <div class="card">
-                    <h2><i class="fas fa-money-bill-wave"></i> Custos Diários</h2>
-                    <div class="costs-grid">
-                        <div class="cost-item">
-                            <i class="fas fa-bed"></i>
-                            <h3>Diária</h3>
-                            <p id="cost-daily">R$ 0,00</p>
-                        </div>
-                        <div class="cost-item">
-                            <i class="fas fa-broom"></i>
-                            <h3>Limpeza</h3>
-                            <p id="cost-cleaning">R$ 0,00</p>
-                        </div>
-                        <div class="cost-item">
-                            <i class="fas fa-handshake"></i>
-                            <h3>Serviço</h3>
-                            <p id="cost-service">R$ 0,00</p>
-                        </div>
-                        <div class="cost-item">
-                            <i class="fas fa-wifi"></i>
-                            <h3>Internet</h3>
-                            <p id="cost-internet">R$ 0,00</p>
-                        </div>
+                <h1>Seu Apartamento</h1>
+                <p>Litoral · Aluguel inteligente</p>
+            </div>
+        </div>
+        <div class="owner-login" id="owner-login-container">
+            <div class="owner-login-form" id="login-form">
+                <input type="email" id="owner-email" placeholder="Email" />
+                <input type="password" id="owner-password" placeholder="Senha" />
+                <button id="btn-owner-login"><i class="fas fa-lock"></i> Entrar</button>
+                <button id="btn-register" style="background:#6b7280;padding:8px 14px;font-size:0.85rem">Cadastrar</button>
+            </div>
+            <div class="owner-logged-in" id="logged-in-info" style="display:none;">
+                <i class="fas fa-user-shield"></i>
+                <span id="owner-email-display"></span>
+                <button id="btn-owner-logout" class="btn-cancel">Sair</button>
+            </div>
+        </div>
+    </header>
+
+    <div class="content-grid">
+        <div>
+            <div class="calendar-card">
+                <div class="calendar-header">
+                    <h2>
+                        <i class="fas fa-calendar-alt"></i> Calendário
+                        <span class="month-display" id="current-month-year">• Carregando...</span>
+                    </h2>
+                    <div class="calendar-controls">
+                        <button id="prev-month"><i class="fas fa-chevron-left"></i></button>
+                        <button id="today">Hoje</button>
+                        <button id="next-month"><i class="fas fa-chevron-right"></i></button>
                     </div>
                 </div>
+                <div id="calendar"></div>
+            </div>
 
-                <div class="gallery-card">
-                    <h2><i class="fas fa-images"></i> Galeria</h2>
-                    <div class="gallery-container">
-                        <div class="gallery-slide active" style="background-image: url('https://images.unsplash.com/photo-1571508601166-21f16e2e64b6?w=600');"></div>
-                        <div class="gallery-slide" style="background-image: url('https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=600');"></div>
-                        <div class="gallery-slide" style="background-image: url('https://images.unsplash.com/photo-1493857671505-72967e2e2760?w=600');"></div>
-                    </div>
-                    <div class="gallery-dots">
-                        <div class="gallery-dot active" onclick="currentSlide(0)"></div>
-                        <div class="gallery-dot" onclick="currentSlide(1)"></div>
-                        <div class="gallery-dot" onclick="currentSlide(2)"></div>
-                    </div>
+            <div class="booking-summary" style="margin-top:24px;">
+                <h2><i class="fas fa-receipt"></i> Resumo da Reserva</h2>
+                <div class="selection-info">
+                    <span>🏠 Check-in: <span id="checkin-display">—</span></span>
+                    <span>🚪 Check-out: <span id="checkout-display">—</span></span>
+                    <span>📅 Diárias: <span id="nights-display">0</span></span>
                 </div>
-
-                <div class="rules-card">
-                    <h2><i class="fas fa-list-check"></i> Regras da Casa</h2>
-                    <div class="rules-content" id="rules-content-display">
-                        <ul>
-                            <li>Check-in a partir das 15h00</li>
-                            <li>Check-out até as 11h00</li>
-                            <li>Máximo de 6 hóspedes</li>
-                            <li>Não é permitido animais de estimação</li>
-                            <li>Festas e eventos não permitidos</li>
-                            <li>Respeitar horários de silêncio</li>
-                            <li>Manter o imóvel limpo</li>
-                            <li>Documentação obrigatória</li>
-                        </ul>
+                <div class="price-details" id="price-details">
+                    <div class="price-row"><span>Valor base das diárias</span><span id="base-rate">—</span></div>
+                    <div class="price-row discount" id="discount-row" style="display:none;">
+                        <span>📉 Desconto progressivo</span>
+                        <span class="discount-badge" id="discount-badge">-R$ 0</span>
                     </div>
+                    <div class="price-row surcharge" id="surcharge-row" style="display:none;">
+                        <span>📈 Acréscimo feriado</span>
+                        <span class="surcharge-badge" id="surcharge-badge">+R$ 0</span>
+                    </div>
+                    <div class="price-row"><span>🧹 Limpeza</span><span id="cleaning-fee">—</span></div>
+                    <div class="price-row" id="service-row"><span>🛏️ Serviço (roupas)</span><span id="service-fee">—</span></div>
+                    <div class="price-row total"><span>💰 Total</span><span id="total-price">—</span></div>
+                </div>
+                <div class="actions" style="display:flex;gap:12px;margin-top:20px;flex-wrap:wrap;">
+                    <button class="btn btn-primary" id="btn-book"><i class="fas fa-check"></i> Reservar</button>
+                    <button class="btn btn-secondary" id="btn-clear"><i class="fas fa-eraser"></i> Limpar</button>
                 </div>
             </div>
         </div>
 
-        <div class="owner-panel" id="owner-panel">
-            <h2><i class="fas fa-user-tie"></i> Painel do Proprietário</h2>
-            <div class="owner-controls">
-                <button class="btn btn-primary" id="btn-edit-costs"><i class="fas fa-edit"></i> Editar Custos</button>
-                <button class="btn btn-secondary" id="btn-manage-rules"><i class="fas fa-file-contract"></i> Editar Regras</button>
+        <div>
+            <div class="card">
+                <h2><i class="fas fa-money-bill-wave"></i> Preços</h2>
+                <div class="costs-grid">
+                    <div class="cost-item"><i class="fas fa-bed"></i><h3>Diária</h3><p id="cost-daily">R$ 350</p></div>
+                    <div class="cost-item"><i class="fas fa-calendar-day"></i><h3>Feriado</h3><p id="cost-holiday">R$ 400</p></div>
+                    <div class="cost-item"><i class="fas fa-broom"></i><h3>Limpeza</h3><p id="cost-cleaning">R$ 150</p></div>
+                    <div class="cost-item service" id="service-card-item"><i class="fas fa-tshirt"></i><h3>Serviço</h3><p id="cost-service">R$ 80</p></div>
+                </div>
+                <div style="margin-top:12px;font-size:0.85rem;color:#475569;background:#f1f5f9;padding:12px;border-radius:8px;line-height:1.8;" id="price-rules-text">
+                    <i class="fas fa-info-circle"></i> <strong>Regras de preço baseadas nos valores definidos:</strong><br>
+                    <span id="rule-daily">Diária base: <span id="rule-daily-value">R$ 350</span></span><br>
+                    <span id="rule-weekday">Dias de semana (desconto progressivo):<br>
+                    1ª: <span id="rule-w1">R$ 350</span> | 2ª: <span id="rule-w2">R$ 325</span> | 3ª: <span id="rule-w3">R$ 300</span> | 4ª: <span id="rule-w4">R$ 275</span> (máximo) | 5ª+: <span id="rule-w5">R$ 300</span>
+                    </span><br>
+                    <span id="rule-holiday">Feriados: <span id="rule-holiday-value">R$ 400</span> (sem desconto)</span><br>
+                    <span id="rule-weekend">Finais de semana: <span id="rule-weekend-value">R$ 350</span> (sem desconto)</span><br>
+                    <span id="rule-cleaning">🧹 Limpeza grátis para estadias ≥ 5 diárias</span>
+                </div>
+                <div class="service-toggle-area" style="margin-top:12px;">
+                    <label for="service-toggle">
+                        <i class="fas fa-tshirt"></i> Serviço de roupas
+                    </label>
+                    <button id="service-toggle" class="btn btn-toggle active">
+                        <i class="fas fa-check-circle"></i> Ativo
+                    </button>
+                    <span class="toggle-desc">(R$ <span id="service-price-display">80</span>/diária)</span>
+                </div>
             </div>
-            <div id="owner-content"></div>
-        </div>
 
-        <div class="confirmation-modal" id="confirmation-modal">
-            <div class="modal-content">
-                <h3><i class="fas fa-check-circle"></i> Confirmar Reserva</h3>
-                <form id="booking-form">
-                    <div class="form-group">
-                        <label for="guest-name">Nome Completo:</label>
-                        <input type="text" id="guest-name" placeholder="Seu nome" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="guest-email">Email:</label>
-                        <input type="email" id="guest-email" placeholder="seu@email.com" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="guest-phone">Telefone:</label>
-                        <input type="tel" id="guest-phone" placeholder="(11) 99999-9999" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="guest-id">CPF/CNPJ:</label>
-                        <input type="text" id="guest-id" placeholder="000.000.000-00" required>
-                    </div>
-                    <div class="modal-actions">
-                        <button type="submit" class="btn btn-primary"><i class="fas fa-check"></i> Confirmar Reserva</button>
-                        <button type="button" class="btn btn-cancel" onclick="closeModal()"><i class="fas fa-times"></i> Cancelar</button>
-                    </div>
-                </form>
+            <div class="gallery-card" style="margin-top:24px;">
+                <h2><i class="fas fa-images"></i> Galeria</h2>
+                <div class="gallery-container" id="gallery-container">
+                    <button class="gallery-btn prev" id="gallery-prev">‹</button>
+                    <button class="gallery-btn next" id="gallery-next">›</button>
+                </div>
+                <div class="gallery-dots" id="gallery-dots"></div>
+            </div>
+
+            <div class="rules-card" style="margin-top:24px;">
+                <h2><i class="fas fa-list-check"></i> Regras da Casa</h2>
+                <div class="rules-content" id="rules-content-display"></div>
             </div>
         </div>
-
-        <div class="notification" id="notification"></div>
-
-        <footer>
-            <p>&copy; 2024 Seu Apartamento no Litoral. Todos os direitos reservados. | Desenvolvido com <i class="fas fa-heart" style="color: #e74c3c;"></i></p>
-        </footer>
     </div>
 
-    <script>
-        // Dados padrão
-        let costs = {
-            daily: 150,
-            cleaning: 100,
-            service: 50,
-            internet: 20
-        };
+    <div class="owner-panel" id="owner-panel">
+        <h2><i class="fas fa-user-tie"></i> Painel do Proprietário</h2>
+        <div class="owner-controls">
+            <button class="btn btn-secondary" id="btn-edit-costs"><i class="fas fa-edit"></i> Custos</button>
+            <button class="btn btn-secondary" id="btn-manage-rules"><i class="fas fa-file-contract"></i> Regras</button>
+            <button class="btn btn-secondary" id="btn-manage-gallery"><i class="fas fa-photo-video"></i> Galeria</button>
+            <button class="btn btn-secondary" id="btn-change-password"><i class="fas fa-key"></i> Senha</button>
+        </div>
+        <div id="owner-content">
+            <h3>Reservas</h3>
+            <div class="bookings-list" id="bookings-list"></div>
+        </div>
+    </div>
 
-        let rules = [
-            "Check-in a partir das 15h00",
-            "Check-out até as 11h00",
-            "Máximo de 6 hóspedes",
-            "Não é permitido animais de estimação",
-            "Festas e eventos não permitidos",
-            "Respeitar horários de silêncio",
-            "Manter o imóvel limpo",
-            "Documentação obrigatória"
-        ];
-
-        let selectedDates = [];
-        let calendar = null;
-        let ownerLoggedIn = false;
-
-        // Inicializar o calendário
-        document.addEventListener('DOMContentLoaded', function() {
-            const calendarEl = document.getElementById('calendar');
-            calendar = new FullCalendar.Calendar(calendarEl, {
-                initialView: 'dayGridMonth',
-                headerToolbar: false,
-                height: 'auto',
-                locale: 'pt-br',
-                dateClick: handleDateClick,
-                dayCellDidMount: function(info) {
-                    info.el.style.cursor = 'pointer';
-                }
-            });
-            calendar.render();
-
-            updateCostsDisplay();
-            setupEventListeners();
-        });
-
-        function setupEventListeners() {
-            document.getElementById('prev-month').addEventListener('click', () => calendar.prev());
-            document.getElementById('next-month').addEventListener('click', () => calendar.next());
-            document.getElementById('today').addEventListener('click', () => calendar.today());
-            document.getElementById('btn-calculate').addEventListener('click', calculateTotal);
-            document.getElementById('btn-book').addEventListener('click', openBookingModal);
-            document.getElementById('btn-owner-login').addEventListener('click', handleOwnerLogin);
-            document.getElementById('btn-owner-logout').addEventListener('click', handleOwnerLogout);
-            document.getElementById('booking-form').addEventListener('submit', submitBooking);
-            document.getElementById('btn-edit-costs').addEventListener('click', showEditCostsForm);
-            document.getElementById('btn-manage-rules').addEventListener('click', showEditRulesForm);
-        }
-
-        function handleDateClick(info) {
-            const dateStr = info.dateStr;
-            const index = selectedDates.indexOf(dateStr);
-            
-            if (index > -1) {
-                selectedDates.splice(index, 1);
-            } else {
-                selectedDates.push(dateStr);
-            }
-
-            updateCalendarDisplay();
-            document.getElementById('rented-days-display').style.display = 'block';
-        }
-
-        function updateCalendarDisplay() {
-            document.querySelectorAll('.fc-daygrid-day').forEach(day => {
-                day.classList.remove('fc-daygrid-day-selected');
-            });
-
-            selectedDates.forEach(date => {
-                const element = document.querySelector(`[data-date="${date}"]`);
-                if (element) {
-                    element.classList.add('fc-daygrid-day-selected');
-                }
-            });
-
-            document.getElementById('selected-days').textContent = selectedDates.length;
-        }
-
-        function updateCostsDisplay() {
-            document.getElementById('cost-daily').textContent = `R$ ${costs.daily.toFixed(2)}`;
-            document.getElementById('cost-cleaning').textContent = `R$ ${costs.cleaning.toFixed(2)}`;
-            document.getElementById('cost-service').textContent = `R$ ${costs.service.toFixed(2)}`;
-            document.getElementById('cost-internet').textContent = `R$ ${costs.internet.toFixed(2)}`;
-        }
-
-        function calculateTotal() {
-            if (selectedDates.length === 0) {
-                showNotification('Selecione pelo menos uma data', 'error');
-                return;
-            }
-
-            const total = (costs.daily * selectedDates.length) + costs.cleaning + costs.service;
-            
-            document.getElementById('daily-rate').textContent = `R$ ${(costs.daily * selectedDates.length).toFixed(2)}`;
-            document.getElementById('cleaning-fee').textContent = `R$ ${costs.cleaning.toFixed(2)}`;
-            document.getElementById('service-fee').textContent = `R$ ${costs.service.toFixed(2)}`;
-            document.getElementById('total-price').textContent = `R$ ${total.toFixed(2)}`;
-
-            showNotification('Cálculo realizado com sucesso!', 'success');
-        }
-
-        function openBookingModal() {
-            if (selectedDates.length === 0) {
-                showNotification('Selecione datas primeiro', 'error');
-                return;
-            }
-            document.getElementById('confirmation-modal').style.display = 'flex';
-        }
-
-        function closeModal() {
-            document.getElementById('confirmation-modal').style.display = 'none';
-        }
-
-        function submitBooking(e) {
-            e.preventDefault();
-            const name = document.getElementById('guest-name').value;
-            
-            showNotification(`Reserva de ${name} solicitada com sucesso!`, 'success');
-            closeModal();
-            document.getElementById('booking-form').reset();
-            selectedDates = [];
-            updateCalendarDisplay();
-        }
-
-        function handleOwnerLogin() {
-            const password = document.getElementById('owner-password').value;
-            if (password === '1234') {
-                ownerLoggedIn = true;
-                document.getElementById('login-form').style.display = 'none';
-                document.getElementById('logged-in-info').style.display = 'flex';
-                document.getElementById('owner-panel').style.display = 'block';
-                showNotification('Propriedade acessada com sucesso!', 'success');
-            } else {
-                showNotification('Senha incorreta', 'error');
-                document.getElementById('owner-password').value = '';
-            }
-        }
-
-        function handleOwnerLogout() {
-            ownerLoggedIn = false;
-            document.getElementById('login-form').style.display = 'flex';
-            document.getElementById('logged-in-info').style.display = 'none';
-            document.getElementById('owner-panel').style.display = 'none';
-            document.getElementById('owner-password').value = '';
-            document.getElementById('owner-content').innerHTML = '';
-            showNotification('Desconectado com sucesso', 'success');
-        }
-
-        function showEditCostsForm() {
-            const ownerContent = document.getElementById('owner-content');
-            ownerContent.innerHTML = `
-                <div class="owner-form">
-                    <h3><i class="fas fa-money-bill-wave"></i> Editar Custos</h3>
-                    <form id="costs-form">
-                        <div class="form-row">
-                            <div class="form-group-owner">
-                                <label for="daily-cost">Diária (R$):</label>
-                                <input type="number" id="daily-cost" value="${costs.daily}" step="0.01" required>
-                            </div>
-                            <div class="form-group-owner">
-                                <label for="cleaning-cost">Limpeza (R$):</label>
-                                <input type="number" id="cleaning-cost" value="${costs.cleaning}" step="0.01" required>
-                            </div>
-                        </div>
-                        <div class="form-row">
-                            <div class="form-group-owner">
-                                <label for="service-cost">Serviço (R$):</label>
-                                <input type="number" id="service-cost" value="${costs.service}" step="0.01" required>
-                            </div>
-                            <div class="form-group-owner">
-                                <label for="internet-cost">Internet (R$):</label>
-                                <input type="number" id="internet-cost" value="${costs.internet}" step="0.01" required>
-                            </div>
-                        </div>
-                        <div class="form-actions">
-                            <button type="button" class="btn btn-cancel" onclick="document.getElementById('owner-content').innerHTML = ''"><i class="fas fa-times"></i> Cancelar</button>
-                            <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Salvar Custos</button>
-                        </div>
-                    </form>
+    <div class="confirmation-modal" id="confirmation-modal">
+        <div class="modal-content">
+            <h3><i class="fas fa-check-circle"></i> Confirmar Reserva</h3>
+            <form id="booking-form">
+                <div class="form-group"><label>Nome Completo</label><input type="text" id="guest-name" placeholder="Seu nome" required /></div>
+                <div class="form-group"><label>Email</label><input type="email" id="guest-email" placeholder="seu@email.com" required /></div>
+                <div class="form-group"><label>Telefone</label><input type="tel" id="guest-phone" placeholder="(11) 99999-9999" required /></div>
+                <div class="form-group"><label>CPF/CNPJ</label><input type="text" id="guest-id" placeholder="000.000.000-00" required /></div>
+                <div class="modal-actions">
+                    <button type="submit" class="btn btn-primary"><i class="fas fa-check"></i> Confirmar</button>
+                    <button type="button" class="btn btn-cancel" id="modal-cancel">Cancelar</button>
                 </div>
-            `;
+            </form>
+        </div>
+    </div>
 
-            document.getElementById('costs-form').addEventListener('submit', function(e) {
-                e.preventDefault();
-                costs.daily = parseFloat(document.getElementById('daily-cost').value);
-                costs.cleaning = parseFloat(document.getElementById('cleaning-cost').value);
-                costs.service = parseFloat(document.getElementById('service-cost').value);
-                costs.internet = parseFloat(document.getElementById('internet-cost').value);
-                
-                updateCostsDisplay();
-                document.getElementById('owner-content').innerHTML = '';
-                showNotification('Custos atualizados com sucesso!', 'success');
-            });
+    <div class="notification" id="notification">
+        <span id="notif-text"></span>
+        <button class="notif-close" id="notif-close">×</button>
+    </div>
+</div>
+
+<script>
+// ================================================================
+//  🔴 SUPABASE CONFIG
+// ================================================================
+const SUPABASE_URL = 'https://xunrfzzeqsizezuxgesg.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh1bnJmenplcXNpemV6dXhnZXNnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY5NzYxNTEsImV4cCI6MjEwMjU1MjE1MX0.VI-EkDFMWy-RAVXiJ4GjsgwbhnAK0R6R6RjBf2gsBr4';
+
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+// ================================================================
+//  DADOS
+// ================================================================
+let costs = { daily: 350, cleaning: 150, service: 80, holiday: 400 };
+let serviceActive = true;
+let rules = [
+    "Check-in a partir das 15h00",
+    "Check-out até as 11h00",
+    "Máximo de 6 hóspedes",
+    "Não é permitido animais",
+    "Festas não permitidas",
+    "Silêncio após 22h",
+    "Manter o imóvel limpo",
+    "Documentação obrigatória"
+];
+let bookings = [];
+let galleryItems = [
+    { type: 'image', url: 'https://images.unsplash.com/photo-1571508601166-21f16e2e64b6?w=600' },
+    { type: 'image', url: 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=600' },
+    { type: 'image', url: 'https://images.unsplash.com/photo-1493857671505-72967e2e2760?w=600' }
+];
+let holidays = [];
+
+let checkinDate = null;
+let checkoutDate = null;
+let calendar = null;
+let slideIndex = 0;
+let slideTimer = null;
+
+// ================================================================
+//  UTILITÁRIOS
+// ================================================================
+function formatCurrency(value) {
+    return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value);
+}
+
+function parseDate(str) {
+    if (!str) return null;
+    const [y,m,d] = str.split('-').map(Number);
+    return new Date(y, m-1, d);
+}
+
+function formatDateDisplay(str) {
+    if (!str) return '—';
+    const d = parseDate(str);
+    if (!d) return '—';
+    return d.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' });
+}
+
+function getTodayStr() {
+    const today = new Date();
+    return `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`;
+}
+
+function isPastDate(dateStr) { return dateStr < getTodayStr(); }
+function isHoliday(dateStr) { return holidays.some(h => h.date === dateStr); }
+function isWeekend(dateStr) { const d = parseDate(dateStr); return d ? (d.getDay()===0||d.getDay()===6) : false; }
+function generateId() { return Date.now().toString(36) + Math.random().toString(36).substr(2, 5); }
+function getWeatherIcon() { const fallback = ['☀️','⛅','🌤️','☁️','🌧️']; return fallback[Math.floor(Math.random()*fallback.length)]; }
+
+// ================================================================
+//  SISTEMA DE PREÇOS
+// ================================================================
+function calculatePricePerDay(dateStr, dayIndex) {
+    const daily = costs.daily || 350;
+    const holiday = costs.holiday || 400;
+    if (isHoliday(dateStr)) return holiday;
+    if (isWeekend(dateStr)) return daily;
+    if (dayIndex === 0) return daily;
+    if (dayIndex === 1) return daily - 25;
+    if (dayIndex === 2) return daily - 50;
+    if (dayIndex === 3) return daily - 75;
+    return daily - 50;
+}
+
+function calculateTotalPrice(dates) {
+    if (!dates || dates.length === 0) {
+        return { total: 0, nights: 0, subtotal: 0, cleaningFee: 0, serviceFee: 0, discountAmount: 0, surchargeAmount: 0, hasDiscount: false, hasSurcharge: false, discountedDays: 0 };
+    }
+    let total = 0, discountAmount = 0, surchargeAmount = 0, hasDiscount = false, hasSurcharge = false, discountedDays = 0;
+    dates.forEach((date, i) => {
+        const price = calculatePricePerDay(date, i);
+        total += price;
+        const isHol = isHoliday(date), isWk = isWeekend(date);
+        if (!isHol && !isWk && i > 0) {
+            hasDiscount = true;
+            discountedDays++;
+            discountAmount += (i === 1 ? 25 : i === 2 ? 50 : i === 3 ? 75 : 50);
+        }
+        if (isHol) {
+            hasSurcharge = true;
+            surchargeAmount += price - (costs.daily || 350);
+        }
+    });
+    let cleaningFee = costs.cleaning || 150;
+    if (dates.length >= 5) cleaningFee = 0;
+    let serviceFee = serviceActive ? (costs.service || 80) : 0;
+    return {
+        total: total + cleaningFee + serviceFee,
+        nights: dates.length,
+        subtotal: total,
+        cleaningFee,
+        serviceFee,
+        discountAmount,
+        surchargeAmount,
+        hasDiscount,
+        hasSurcharge,
+        discountedDays
+    };
+}
+
+// ================================================================
+//  RESERVAS
+// ================================================================
+function getBlockedDates() {
+    const blocked = [];
+    bookings.forEach(b => {
+        if (b.status === 'confirmed' && b.dates) {
+            b.dates.forEach(d => blocked.push(d));
+        }
+    });
+    return blocked;
+}
+function isDateBlocked(s) { return getBlockedDates().includes(s); }
+function hasBlockedInRange(a, b) {
+    const blocked = getBlockedDates();
+    const d1 = parseDate(a), d2 = parseDate(b);
+    if (!d1 || !d2) return false;
+    let cur = new Date(d1);
+    while (cur < d2) {
+        const key = `${cur.getFullYear()}-${String(cur.getMonth()+1).padStart(2,'0')}-${String(cur.getDate()).padStart(2,'0')}`;
+        if (blocked.includes(key)) return true;
+        cur.setDate(cur.getDate() + 1);
+    }
+    return false;
+}
+
+// ================================================================
+//  FUNÇÕES SUPABASE - SINCRONIZAÇÃO EM TEMPO REAL
+// ================================================================
+async function loadData() {
+    try {
+        // Carregar configurações
+        const { data: configData, error: configError } = await supabase
+            .from('config')
+            .select('*')
+            .limit(1);
+        if (!configError && configData && configData.length > 0) {
+            costs = configData[0].costs || costs;
+            rules = configData[0].rules || rules;
+            if (configData[0].service_active !== undefined) serviceActive = configData[0].service_active;
         }
 
-        function showEditRulesForm() {
-            const ownerContent = document.getElementById('owner-content');
-            let rulesHTML = `
-                <div class="owner-form">
-                    <h3><i class="fas fa-list-check"></i> Editar Regras da Casa</h3>
-                    <form id="rules-form">
-                        <div class="form-row" style="grid-template-columns: 1fr; gap: 8px;">
-            `;
+        // Carregar galeria
+        const { data: galleryData, error: galleryError } = await supabase
+            .from('gallery')
+            .select('*')
+            .order('created_at', { ascending: true });
+        if (!galleryError && galleryData && galleryData.length > 0) {
+            galleryItems = galleryData;
+        }
 
-            rules.forEach((rule, index) => {
-                rulesHTML += `
-                    <div class="form-group-owner">
-                        <input type="text" class="rule-input" data-index="${index}" value="${rule}" required>
-                    </div>
-                `;
+        // Carregar feriados
+        const { data: holidaysData, error: holidaysError } = await supabase
+            .from('holidays')
+            .select('*')
+            .order('date', { ascending: true });
+        if (!holidaysError && holidaysData && holidaysData.length > 0) {
+            holidays = holidaysData;
+        }
+
+        // Carregar reservas (apenas se logado)
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session) {
+            const { data: bookingsData, error: bookingsError } = await supabase
+                .from('bookings')
+                .select('*')
+                .order('created_at', { ascending: false });
+            if (!bookingsError && bookingsData) {
+                bookings = bookingsData;
+            }
+        }
+
+        console.log('✅ Dados carregados do Supabase!');
+        return true;
+    } catch (error) {
+        console.error('❌ Erro ao carregar dados:', error);
+        return false;
+    }
+}
+
+async function saveConfig() {
+    try {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session) {
+            showNotification('Você precisa estar logado para salvar configurações.', 'error');
+            return false;
+        }
+        const { error } = await supabase
+            .from('config')
+            .upsert({
+                id: '00000000-0000-0000-0000-000000000000',
+                costs: costs,
+                rules: rules,
+                service_active: serviceActive,
+                updated_at: new Date().toISOString()
             });
+        if (error) throw error;
+        console.log('✅ Configurações salvas no Supabase!');
+        return true;
+    } catch (error) {
+        console.error('❌ Erro ao salvar configurações:', error);
+        showNotification('Erro ao salvar: ' + error.message, 'error');
+        return false;
+    }
+}
 
-            rulesHTML += `
-                        </div>
-                        <div class="form-actions">
-                            <button type="button" class="btn btn-cancel" onclick="document.getElementById('owner-content').innerHTML = ''"><i class="fas fa-times"></i> Cancelar</button>
-                            <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Salvar Regras</button>
-                        </div>
-                    </form>
-                </div>
-            `;
-
-            ownerContent.innerHTML = rulesHTML;
-
-            document.getElementById('rules-form').addEventListener('submit', function(e) {
-                e.preventDefault();
-                const ruleInputs = document.querySelectorAll('.rule-input');
-                rules = [];
-                ruleInputs.forEach(input => {
-                    if (input.value.trim()) {
-                        rules.push(input.value.trim());
-                    }
+async function saveBookings() {
+    try {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session) {
+            showNotification('Você precisa estar logado para gerenciar reservas.', 'error');
+            return false;
+        }
+        for (const booking of bookings) {
+            const { error } = await supabase
+                .from('bookings')
+                .upsert({
+                    id: booking.id,
+                    guest_name: booking.guestName || booking.guest_name,
+                    guest_email: booking.guestEmail || booking.guest_email,
+                    guest_phone: booking.guestPhone || booking.guest_phone,
+                    guest_id: booking.guestId || booking.guest_id,
+                    dates: booking.dates,
+                    total: booking.total,
+                    status: booking.status,
+                    created_at: booking.createdAt || booking.created_at || new Date().toISOString()
                 });
-                
-                updateRulesDisplay();
-                document.getElementById('owner-content').innerHTML = '';
-                showNotification('Regras atualizadas com sucesso!', 'success');
-            });
+            if (error) throw error;
         }
+        console.log('✅ Reservas salvas no Supabase!');
+        return true;
+    } catch (error) {
+        console.error('❌ Erro ao salvar reservas:', error);
+        showNotification('Erro ao salvar reservas: ' + error.message, 'error');
+        return false;
+    }
+}
 
-        function updateRulesDisplay() {
-            let rulesHTML = '<ul>';
-            rules.forEach(rule => {
-                rulesHTML += `<li>${rule}</li>`;
-            });
-            rulesHTML += '</ul>';
-            document.getElementById('rules-content-display').innerHTML = rulesHTML;
+async function saveGallery() {
+    try {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session) {
+            showNotification('Você precisa estar logado para gerenciar a galeria.', 'error');
+            return false;
         }
-
-        function showNotification(message, type) {
-            const notification = document.getElementById('notification');
-            notification.textContent = message;
-            notification.className = `notification ${type}`;
-            notification.style.display = 'block';
-
-            setTimeout(() => {
-                notification.style.display = 'none';
-            }, 3000);
+        const { error: deleteError } = await supabase
+            .from('gallery')
+            .delete()
+            .neq('id', '00000000-0000-0000-0000-000000000000');
+        if (deleteError) throw deleteError;
+        for (const item of galleryItems) {
+            const { error } = await supabase
+                .from('gallery')
+                .insert({ type: item.type, url: item.url, created_at: new Date().toISOString() });
+            if (error) throw error;
         }
+        console.log('✅ Galeria salva no Supabase!');
+        return true;
+    } catch (error) {
+        console.error('❌ Erro ao salvar galeria:', error);
+        showNotification('Erro ao salvar galeria: ' + error.message, 'error');
+        return false;
+    }
+}
 
-        function currentSlide(index) {
-            const slides = document.querySelectorAll('.gallery-slide');
-            const dots = document.querySelectorAll('.gallery-dot');
-            
-            slides.forEach(slide => slide.classList.remove('active'));
-            dots.forEach(dot => dot.classList.remove('active'));
-            
-            slides[index].classList.add('active');
-            dots[index].classList.add('active');
+// ================================================================
+//  AUTH
+// ================================================================
+async function handleOwnerLogin() {
+    const email = document.getElementById('owner-email').value.trim();
+    const password = document.getElementById('owner-password').value;
+    if (!email || !password) {
+        showNotification('Preencha email e senha.', 'error');
+        return;
+    }
+    try {
+        const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+        if (error) throw error;
+        document.getElementById('owner-email-display').textContent = data.user.email;
+        document.getElementById('login-form').style.display = 'none';
+        document.getElementById('logged-in-info').style.display = 'flex';
+        document.getElementById('owner-panel').style.display = 'block';
+        await loadData();
+        renderBookings();
+        updateCalendarEvents();
+        updateCostsDisplay();
+        updateRulesDisplay();
+        buildGallery();
+        updatePriceRulesDisplay();
+        showNotification('Logado com sucesso!', 'success');
+    } catch (error) {
+        showNotification(error.message, 'error');
+    }
+}
+
+async function handleRegister() {
+    const email = document.getElementById('owner-email').value.trim();
+    const password = document.getElementById('owner-password').value;
+    if (!email || !password || password.length < 6) {
+        showNotification('Email e senha (mínimo 6 caracteres) são obrigatórios.', 'error');
+        return;
+    }
+    try {
+        const { error } = await supabase.auth.signUp({ email, password });
+        if (error) throw error;
+        showNotification('Cadastro realizado! Verifique seu email para confirmar.', 'success');
+    } catch (error) {
+        showNotification(error.message, 'error');
+    }
+}
+
+async function handleOwnerLogout() {
+    try {
+        await supabase.auth.signOut();
+        document.getElementById('login-form').style.display = 'flex';
+        document.getElementById('logged-in-info').style.display = 'none';
+        document.getElementById('owner-panel').style.display = 'none';
+        bookings = [];
+        renderBookings();
+        updateCalendarEvents();
+        showNotification('Deslogado.', 'success');
+    } catch (error) {
+        showNotification(error.message, 'error');
+    }
+}
+
+async function checkSession() {
+    try {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session) {
+            document.getElementById('owner-email-display').textContent = session.user.email;
+            document.getElementById('login-form').style.display = 'none';
+            document.getElementById('logged-in-info').style.display = 'flex';
+            document.getElementById('owner-panel').style.display = 'block';
+            return true;
         }
+        return false;
+    } catch (error) {
+        console.error('Erro ao verificar sessão:', error);
+        return false;
+    }
+}
 
-        // Fechar modal ao clicar fora
-        document.addEventListener('click', function(e) {
-            const modal = document.getElementById('confirmation-modal');
-            if (e.target === modal) {
-                closeModal();
-            }
+// ================================================================
+//  TODAS AS FUNÇÕES DE RENDER, UPDATE, EDIÇÃO IGUAIS AO ANTERIOR
+//  MAS COM SUPABASE (salvando no banco)
+// ================================================================
+
+// RENDER BOOKINGS
+function renderBookings() {
+    const container = document.getElementById('bookings-list');
+    if (!container) return;
+    if (bookings.length === 0) {
+        container.innerHTML = '<p style="text-align:center;color:#94a3b8;">Nenhuma reserva ainda.</p>';
+        return;
+    }
+    const sorted = [...bookings].sort((a,b) => new Date(b.createdAt || b.created_at) - new Date(a.createdAt || a.created_at));
+    container.innerHTML = sorted.map(b => `
+        <div class="booking-item">
+            <div>
+                <strong>${b.guestName || b.guest_name || ''}</strong> - ${(b.dates || []).length} diária(s)<br>
+                <small>${formatDateDisplay((b.dates || [])[0])} → ${formatDateDisplay((b.dates || [])[(b.dates || []).length-1])}</small><br>
+                <span class="status-badge ${b.status || 'pending'}">${(b.status || 'pending').toUpperCase()}</span>
+            </div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:6px;">
+                ${b.status === 'pending' ? `
+                    <button class="btn btn-success" style="padding:6px 16px;" onclick="confirmBooking('${b.id}')"><i class="fas fa-check"></i> Confirmar</button>
+                    <button class="btn btn-cancel" style="padding:6px 16px;" onclick="cancelBooking('${b.id}')"><i class="fas fa-times"></i> Cancelar</button>
+                ` : ''}
+                ${b.status === 'confirmed' ? `
+                    <button class="btn btn-cancel" style="padding:6px 16px;" onclick="cancelBooking('${b.id}')"><i class="fas fa-times"></i> Cancelar</button>
+                ` : ''}
+            </div>
+        </div>
+    `).join('');
+}
+
+window.confirmBooking = async function(id) {
+    const b = bookings.find(bk => bk.id === id);
+    if (!b) return;
+    const dates = b.dates || [];
+    if (dates.length > 0) {
+        const conflicting = bookings.some(other => 
+            other.id !== id && other.status === 'confirmed' && other.dates && other.dates.some(d => dates.includes(d))
+        );
+        if (conflicting) {
+            showNotification('Período conflitante com outra reserva confirmada.', 'error');
+            return;
+        }
+    }
+    b.status = 'confirmed';
+    await saveBookings();
+    renderBookings();
+    updateCalendarEvents();
+    showNotification('Reserva confirmada!', 'success');
+};
+
+window.cancelBooking = async function(id) {
+    const b = bookings.find(bk => bk.id === id);
+    if (!b) return;
+    if (b.status === 'confirmed' && !confirm('Cancelar reserva confirmada?')) return;
+    b.status = 'canceled';
+    await saveBookings();
+    renderBookings();
+    updateCalendarEvents();
+    showNotification('Reserva cancelada.', 'success');
+};
+
+// CALENDÁRIO
+function updateCalendarEvents() {
+    if (!calendar) return;
+    calendar.getEvents().forEach(e => e.remove());
+    getBlockedDates().forEach(d => calendar.addEvent({ start: d, display: 'background', backgroundColor: '#fca5a5' }));
+    holidays.forEach(h => calendar.addEvent({ start: h.date, display: 'background', backgroundColor: 'rgba(220,38,38,0.15)' }));
+    if (!checkinDate) return;
+    calendar.addEvent({ start: checkinDate, display: 'background', backgroundColor: '#c026d3' });
+    if (!checkoutDate) return;
+    calendar.addEvent({ start: checkoutDate, display: 'background', backgroundColor: '#dc2626' });
+    const d1 = parseDate(checkinDate), d2 = parseDate(checkoutDate);
+    if (!d1 || !d2) return;
+    let cur = new Date(d1);
+    cur.setDate(cur.getDate() + 1);
+    while (cur < d2) {
+        const ds = `${cur.getFullYear()}-${String(cur.getMonth()+1).padStart(2,'0')}-${String(cur.getDate()).padStart(2,'0')}`;
+        if (!isDateBlocked(ds)) calendar.addEvent({ start: ds, display: 'background', backgroundColor: '#60a5fa' });
+        cur.setDate(cur.getDate() + 1);
+    }
+}
+
+function handleDateClick(info) {
+    const s = info.dateStr;
+    if (isPastDate(s)) { showNotification('Data passada', 'error'); return; }
+    if (isDateBlocked(s)) { showNotification('Indisponível', 'error'); return; }
+    if (!checkinDate) { checkinDate = s; checkoutDate = null; updateCalendarEvents(); updateSummary(); return; }
+    if (checkinDate === s) { checkinDate = null; checkoutDate = null; updateCalendarEvents(); updateSummary(); return; }
+    if (!checkoutDate) {
+        const d1 = parseDate(checkinDate), d2 = parseDate(s);
+        if (d2 <= d1) { showNotification('Saída após entrada', 'error'); return; }
+        if (hasBlockedInRange(checkinDate, s)) { showNotification('Período com bloqueio', 'error'); checkinDate = null; checkoutDate = null; updateCalendarEvents(); updateSummary(); return; }
+        checkoutDate = s; updateCalendarEvents(); updateSummary(); return;
+    }
+    checkinDate = s; checkoutDate = null; updateCalendarEvents(); updateSummary();
+}
+
+function updateMonthDisplay(date) {
+    const el = document.getElementById('current-month-year');
+    const months = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+    el.textContent = `• ${months[date.getMonth()]} ${date.getFullYear()}`;
+}
+
+function updateSummary() {
+    document.getElementById('checkin-display').textContent = checkinDate ? formatDateDisplay(checkinDate) : '—';
+    document.getElementById('checkout-display').textContent = checkoutDate ? formatDateDisplay(checkoutDate) : '—';
+    if (!checkinDate || !checkoutDate) {
+        document.getElementById('nights-display').textContent = '0';
+        document.getElementById('base-rate').textContent = '—';
+        document.getElementById('cleaning-fee').textContent = '—';
+        document.getElementById('service-fee').textContent = '—';
+        document.getElementById('total-price').textContent = 'Selecione as datas';
+        document.getElementById('discount-row').style.display = 'none';
+        document.getElementById('surcharge-row').style.display = 'none';
+        return;
+    }
+    const d1 = parseDate(checkinDate), d2 = parseDate(checkoutDate);
+    const dates = [];
+    let cur = new Date(d1);
+    while (cur < d2) {
+        dates.push(`${cur.getFullYear()}-${String(cur.getMonth()+1).padStart(2,'0')}-${String(cur.getDate()).padStart(2,'0')}`);
+        cur.setDate(cur.getDate() + 1);
+    }
+    const r = calculateTotalPrice(dates);
+    document.getElementById('nights-display').textContent = r.nights;
+    document.getElementById('base-rate').textContent = formatCurrency(r.subtotal);
+    if (r.hasDiscount && r.discountAmount > 0) {
+        document.getElementById('discount-row').style.display = 'flex';
+        document.getElementById('discount-badge').textContent = `-${formatCurrency(r.discountAmount)} (${r.discountedDays} dias)`;
+    } else {
+        document.getElementById('discount-row').style.display = 'none';
+    }
+    if (r.hasSurcharge && r.surchargeAmount > 0) {
+        document.getElementById('surcharge-row').style.display = 'flex';
+        document.getElementById('surcharge-badge').textContent = `+${formatCurrency(r.surchargeAmount)}`;
+    } else {
+        document.getElementById('surcharge-row').style.display = 'none';
+    }
+    document.getElementById('cleaning-fee').textContent = r.cleaningFee === 0 ? `${formatCurrency(0)} (grátis ${r.nights} diárias)` : formatCurrency(r.cleaningFee);
+    if (serviceActive && r.serviceFee > 0) {
+        document.getElementById('service-row').style.display = 'flex';
+        document.getElementById('service-fee').textContent = formatCurrency(r.serviceFee);
+    } else {
+        document.getElementById('service-row').style.display = 'none';
+    }
+    document.getElementById('total-price').textContent = formatCurrency(r.total);
+}
+
+function updatePriceRulesDisplay() {
+    const daily = costs.daily || 350;
+    const holiday = costs.holiday || 400;
+    document.getElementById('rule-daily-value').textContent = formatCurrency(daily);
+    document.getElementById('rule-holiday-value').textContent = formatCurrency(holiday);
+    document.getElementById('rule-weekend-value').textContent = formatCurrency(daily);
+    document.getElementById('rule-w1').textContent = formatCurrency(daily);
+    document.getElementById('rule-w2').textContent = formatCurrency(daily - 25);
+    document.getElementById('rule-w3').textContent = formatCurrency(daily - 50);
+    document.getElementById('rule-w4').textContent = formatCurrency(daily - 75);
+    document.getElementById('rule-w5').textContent = formatCurrency(daily - 50);
+}
+
+// GALERIA
+function buildGallery() {
+    const container = document.getElementById('gallery-container');
+    container.querySelectorAll('.gallery-slide').forEach(s => s.remove());
+    if (!galleryItems.length) {
+        const e = document.createElement('div');
+        e.className = 'gallery-slide active';
+        e.innerHTML = '<p style="color:#94a3b8;">Nenhuma mídia</p>';
+        container.insertBefore(e, container.querySelector('.gallery-btn.prev'));
+        return;
+    }
+    galleryItems.forEach((it, i) => {
+        const s = document.createElement('div');
+        s.className = 'gallery-slide' + (i === 0 ? ' active' : '');
+        if (it.type === 'image') s.style.backgroundImage = `url('${it.url}')`;
+        else s.innerHTML = `<iframe src="${it.url}" style="width:100%;height:100%;border:0"></iframe>`;
+        container.insertBefore(s, container.querySelector('.gallery-btn.prev'));
+    });
+    const dots = document.getElementById('gallery-dots');
+    dots.innerHTML = '';
+    galleryItems.forEach((_, i) => {
+        const d = document.createElement('div');
+        d.className = 'gallery-dot' + (i === 0 ? ' active' : '');
+        d.addEventListener('click', () => goToSlide(i));
+        dots.appendChild(d);
+    });
+    slideIndex = 0;
+    startSlideshow();
+}
+
+function goToSlide(i) {
+    const slides = document.querySelectorAll('.gallery-slide'), dots = document.querySelectorAll('.gallery-dot');
+    if (!slides.length) return;
+    if (i < 0) i = slides.length - 1;
+    if (i >= slides.length) i = 0;
+    slides.forEach((s, idx) => s.classList.toggle('active', idx === i));
+    dots.forEach((d, idx) => d.classList.toggle('active', idx === i));
+    slideIndex = i;
+    startSlideshow();
+}
+
+function startSlideshow() {
+    if (slideTimer) clearInterval(slideTimer);
+    if (galleryItems.length > 1) slideTimer = setInterval(() => goToSlide(slideIndex + 1), 5000);
+}
+
+// EDIÇÃO DE CUSTOS
+function showEditCosts() {
+    const container = document.getElementById('owner-content');
+    container.innerHTML = `
+        <div class="owner-form">
+            <h3>Editar Custos</h3>
+            <form id="costs-form">
+                <div class="form-row">
+                    <div class="form-group-owner"><label>Diária (R$)</label><input type="number" step="0.01" id="daily-cost" value="${costs.daily}" /></div>
+                    <div class="form-group-owner"><label>Feriado (R$)</label><input type="number" step="0.01" id="holiday-cost" value="${costs.holiday}" /></div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group-owner"><label>Limpeza (R$)</label><input type="number" step="0.01" id="cleaning-cost" value="${costs.cleaning}" /></div>
+                    <div class="form-group-owner"><label>Serviço (R$ - roupas)</label><input type="number" step="0.01" id="service-cost" value="${costs.service}" /></div>
+                </div>
+                <div style="display:flex;align-items:center;gap:12px;background:#f1f5f9;padding:12px;border-radius:12px;margin-top:12px;">
+                    <label style="font-weight:600;font-size:0.9rem;margin:0;">
+                        <i class="fas fa-tshirt"></i> Serviço ativo
+                    </label>
+                    <button id="service-toggle-admin" class="btn ${serviceActive ? 'btn-success' : 'btn-secondary'}" style="padding:4px 16px;">
+                        ${serviceActive ? '✅ Ativo' : '❌ Inativo'}
+                    </button>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-cancel" onclick="resetOwnerContent()">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Salvar</button>
+                </div>
+            </form>
+        </div>
+    `;
+
+    document.getElementById('service-toggle-admin').addEventListener('click', function() {
+        serviceActive = !serviceActive;
+        this.textContent = serviceActive ? '✅ Ativo' : '❌ Inativo';
+        this.className = `btn ${serviceActive ? 'btn-success' : 'btn-secondary'}`;
+        const userToggle = document.getElementById('service-toggle');
+        if (userToggle) {
+            userToggle.textContent = serviceActive ? '✅ Ativo' : '❌ Inativo';
+            userToggle.className = `btn btn-toggle ${serviceActive ? 'active' : ''}`;
+        }
+        const serviceCardItem = document.getElementById('service-card-item');
+        if (serviceCardItem) {
+            serviceCardItem.style.display = serviceActive ? '' : 'none !important';
+        }
+        saveConfig();
+        updateSummary();
+        showNotification(`Serviço ${serviceActive ? 'ativado' : 'desativado'}!`, 'success');
+    });
+
+    document.getElementById('costs-form').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const daily = parseFloat(document.getElementById('daily-cost').value) || 350;
+        const holiday = parseFloat(document.getElementById('holiday-cost').value) || 400;
+        const cleaning = parseFloat(document.getElementById('cleaning-cost').value) || 150;
+        const service = parseFloat(document.getElementById('service-cost').value) || 80;
+        costs.daily = daily; costs.holiday = holiday; costs.cleaning = cleaning; costs.service = service;
+        await saveConfig();
+        updateCostsDisplay();
+        updatePriceRulesDisplay();
+        updateSummary();
+        resetOwnerContent();
+        showNotification('Custos atualizados!', 'success');
+    });
+}
+
+// EDIÇÃO DE REGRAS
+function showEditRules() {
+    const container = document.getElementById('owner-content');
+    let html = `<div class="owner-form"><h3>Editar Regras</h3><form id="rules-form"><div class="form-row" style="grid-template-columns:1fr;">`;
+    if (rules && rules.length > 0) {
+        rules.forEach((r, i) => {
+            html += `<div class="form-group-owner"><input type="text" class="rule-input" data-index="${i}" value="${r}" /></div>`;
         });
-    </script>
+    }
+    html += `</div><div class="form-actions">
+        <button type="button" class="btn btn-cancel" onclick="resetOwnerContent()">Cancelar</button>
+        <button type="submit" class="btn btn-primary">Salvar</button>
+    </div></form></div>`;
+    container.innerHTML = html;
+
+    document.getElementById('rules-form').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const inputs = document.querySelectorAll('.rule-input');
+        rules = [];
+        inputs.forEach(inp => { if (inp.value.trim()) rules.push(inp.value.trim()); });
+        await saveConfig();
+        updateRulesDisplay();
+        resetOwnerContent();
+        showNotification('Regras atualizadas!', 'success');
+    });
+}
+
+// EDIÇÃO DE GALERIA
+function showEditGallery() {
+    const container = document.getElementById('owner-content');
+    container.innerHTML = `
+        <div class="owner-form">
+            <h3>Editar Galeria</h3>
+            <form id="gallery-form">
+                <div class="form-row">
+                    <div class="form-group-owner"><label>URL</label><input type="text" id="media-url" placeholder="https://..." /></div>
+                    <div class="form-group-owner"><label>Tipo</label>
+                        <select id="media-type"><option value="image">Imagem</option><option value="video">Vídeo</option></select>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary">Adicionar</button>
+            </form>
+            <div id="gallery-items-list" style="margin-top:16px;"></div>
+            <div style="margin-top:12px"><button class="btn btn-cancel" onclick="resetOwnerContent()">Fechar</button></div>
+        </div>
+    `;
+
+    function renderItems() {
+        const list = document.getElementById('gallery-items-list');
+        if (!list) return;
+        list.innerHTML = galleryItems.map((it, idx) => `
+            <div style="background:#f1f5f9;border-radius:8px;padding:6px 10px;display:flex;gap:8px;align-items:center;font-size:.85rem;margin-bottom:4px;">
+                ${it.url.slice(0,40)}...<button class="btn btn-cancel" style="padding:2px 8px" onclick="removeGalleryItem(${idx})">x</button>
+            </div>
+        `).join('');
+    }
+    renderItems();
+
+    document.getElementById('gallery-form').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const url = document.getElementById('media-url').value.trim();
+        const type = document.getElementById('media-type').value;
+        if (!url) return;
+        galleryItems.push({type, url});
+        await saveGallery();
+        renderItems();
+        buildGallery();
+        document.getElementById('media-url').value = '';
+        showNotification('Adicionado!', 'success');
+    });
+
+    window.removeGalleryItem = async function(idx) {
+        galleryItems.splice(idx, 1);
+        await saveGallery();
+        renderItems();
+        buildGallery();
+        showNotification('Removido!', 'success');
+    };
+}
+
+function resetOwnerContent() {
+    document.getElementById('owner-content').innerHTML = '<h3>Reservas</h3><div class="bookings-list" id="bookings-list"></div>';
+    renderBookings();
+}
+
+function updateCostsDisplay() {
+    document.getElementById('cost-daily').textContent = formatCurrency(costs.daily);
+    document.getElementById('cost-holiday').textContent = formatCurrency(costs.holiday);
+    document.getElementById('cost-cleaning').textContent = formatCurrency(costs.cleaning);
+    const serviceCard = document.getElementById('cost-service');
+    if (serviceCard) {
+        serviceCard.textContent = formatCurrency(costs.service);
+        const serviceCardItem = document.getElementById('service-card-item');
+        if (serviceCardItem) {
+            serviceCardItem.style.display = serviceActive ? '' : 'none !important';
+        }
+    }
+    document.getElementById('service-price-display').textContent = costs.service;
+}
+
+function updateRulesDisplay() {
+    const c = document.getElementById('rules-content-display');
+    c.innerHTML = '<ul>' + rules.map(r => `<li>${r}</li>`).join('') + '</ul>';
+}
+
+function showNotification(msg, type) {
+    const el = document.getElementById('notification');
+    document.getElementById('notif-text').textContent = msg;
+    el.className = 'notification ' + type;
+    el.style.display = 'flex';
+    clearTimeout(el._timeout);
+    el._timeout = setTimeout(() => el.style.display = 'none', 4000);
+}
+
+function openBookingModal() {
+    if (!checkinDate || !checkoutDate) { showNotification('Selecione datas', 'error'); return; }
+    if (hasBlockedInRange(checkinDate, checkoutDate)) { showNotification('Período indisponível', 'error'); checkinDate = null; checkoutDate = null; updateCalendarEvents(); updateSummary(); return; }
+    document.getElementById('confirmation-modal').style.display = 'flex';
+}
+
+function closeModal() { document.getElementById('confirmation-modal').style.display = 'none'; }
+
+async function submitBooking(e) {
+    e.preventDefault();
+    const name = document.getElementById('guest-name').value.trim();
+    const email = document.getElementById('guest-email').value.trim();
+    const phone = document.getElementById('guest-phone').value.trim();
+    const gid = document.getElementById('guest-id').value.trim();
+    if (!name || !email || !phone || !gid) { showNotification('Preencha todos os campos', 'error'); return; }
+    const d1 = parseDate(checkinDate), d2 = parseDate(checkoutDate);
+    const dates = [];
+    let cur = new Date(d1);
+    while (cur < d2) {
+        dates.push(`${cur.getFullYear()}-${String(cur.getMonth()+1).padStart(2,'0')}-${String(cur.getDate()).padStart(2,'0')}`);
+        cur.setDate(cur.getDate() + 1);
+    }
+    const r = calculateTotalPrice(dates);
+    const newBooking = {
+        id: generateId(),
+        guest_name: name,
+        guest_email: email,
+        guest_phone: phone,
+        guest_id: gid,
+        dates: dates,
+        total: r.total,
+        status: 'pending',
+        created_at: new Date().toISOString()
+    };
+    try {
+        const { error } = await supabase.from('bookings').insert(newBooking);
+        if (error) throw error;
+        bookings.push(newBooking);
+        closeModal();
+        document.getElementById('booking-form').reset();
+        checkinDate = null; checkoutDate = null;
+        updateCalendarEvents();
+        updateSummary();
+        showNotification(`Reserva solicitada, ${name}! Aguarde confirmação.`, 'success');
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session) {
+            await loadData();
+            renderBookings();
+        }
+    } catch (error) {
+        showNotification('Erro ao fazer reserva: ' + error.message, 'error');
+    }
+}
+
+// ================================================================
+//  INICIALIZAÇÃO
+// ================================================================
+document.addEventListener('DOMContentLoaded', async function() {
+    await checkSession();
+    await loadData();
+
+    updateCostsDisplay();
+    updateRulesDisplay();
+    updatePriceRulesDisplay();
+
+    // Toggle serviço
+    const serviceToggle = document.getElementById('service-toggle');
+    if (serviceToggle) {
+        serviceToggle.textContent = serviceActive ? '✅ Ativo' : '❌ Inativo';
+        serviceToggle.className = `btn btn-toggle ${serviceActive ? 'active' : ''}`;
+        serviceToggle.addEventListener('click', function() {
+            serviceActive = !serviceActive;
+            this.textContent = serviceActive ? '✅ Ativo' : '❌ Inativo';
+            this.className = `btn btn-toggle ${serviceActive ? 'active' : ''}`;
+            const serviceCardItem = document.getElementById('service-card-item');
+            if (serviceCardItem) {
+                serviceCardItem.style.display = serviceActive ? '' : 'none !important';
+            }
+            saveConfig();
+            updateSummary();
+            showNotification(`Serviço ${serviceActive ? 'ativado' : 'desativado'}!`, 'success');
+        });
+    }
+
+    const calendarEl = document.getElementById('calendar');
+    calendar = new FullCalendar.Calendar(calendarEl, {
+        initialView: 'dayGridMonth',
+        headerToolbar: false,
+        height: 'auto',
+        locale: 'pt-br',
+        dateClick: handleDateClick,
+        dayCellDidMount: function(info) {
+            const dateStr = info.dateStr;
+            const dayNumber = info.el.querySelector('.fc-daygrid-day-number');
+            if (isPastDate(dateStr)) {
+                info.el.classList.add('fc-day-past');
+                info.el.style.cursor = 'not-allowed';
+                info.el.style.opacity = '0.5';
+            }
+            if (isDateBlocked(dateStr)) {
+                info.el.classList.add('fc-day-blocked');
+                info.el.style.cursor = 'not-allowed';
+                info.el.style.opacity = '0.6';
+            }
+            if (isHoliday(dateStr) && dayNumber && !dayNumber.querySelector('.holiday-badge')) {
+                const badge = document.createElement('span');
+                badge.className = 'holiday-badge';
+                badge.textContent = '🎉';
+                badge.style.cssText = 'margin-left:4px;font-size:0.7rem;';
+                dayNumber.appendChild(badge);
+            }
+            if (dayNumber && !dayNumber.querySelector('.weather-icon')) {
+                const weatherIcon = getWeatherIcon();
+                const weatherSpan = document.createElement('span');
+                weatherSpan.className = 'weather-icon';
+                weatherSpan.textContent = weatherIcon;
+                weatherSpan.style.cssText = 'font-size:0.7rem;margin-left:4px;';
+                dayNumber.appendChild(weatherSpan);
+            }
+        },
+        datesSet: function(info) {
+            updateMonthDisplay(info.view.currentStart);
+            updateCalendarEvents();
+        }
+    });
+    calendar.render();
+    updateMonthDisplay(calendar.getDate());
+
+    buildGallery();
+    renderBookings();
+    updateSummary();
+
+    // EVENT LISTENERS
+    document.getElementById('prev-month').addEventListener('click', () => calendar.prev());
+    document.getElementById('next-month').addEventListener('click', () => calendar.next());
+    document.getElementById('today').addEventListener('click', () => calendar.today());
+    document.getElementById('btn-clear').addEventListener('click', function() {
+        checkinDate = null; checkoutDate = null; updateCalendarEvents(); updateSummary(); showNotification('Limpo!', 'success');
+    });
+    document.getElementById('btn-owner-login').addEventListener('click', handleOwnerLogin);
+    document.getElementById('btn-owner-logout').addEventListener('click', handleOwnerLogout);
+    document.getElementById('btn-register').addEventListener('click', handleRegister);
+    document.getElementById('owner-email').addEventListener('keydown', (e) => { if (e.key === 'Enter') handleOwnerLogin(); });
+    document.getElementById('owner-password').addEventListener('keydown', (e) => { if (e.key === 'Enter') handleOwnerLogin(); });
+    document.getElementById('btn-book').addEventListener('click', openBookingModal);
+    document.getElementById('booking-form').addEventListener('submit', submitBooking);
+    document.getElementById('modal-cancel').addEventListener('click', closeModal);
+    document.getElementById('btn-edit-costs').addEventListener('click', showEditCosts);
+    document.getElementById('btn-manage-rules').addEventListener('click', showEditRules);
+    document.getElementById('btn-manage-gallery').addEventListener('click', showEditGallery);
+    document.getElementById('gallery-prev').addEventListener('click', () => goToSlide(slideIndex - 1));
+    document.getElementById('gallery-next').addEventListener('click', () => goToSlide(slideIndex + 1));
+    document.getElementById('confirmation-modal').addEventListener('click', (e) => { if (e.target === e.currentTarget) closeModal(); });
+    document.getElementById('notif-close').addEventListener('click', () => document.getElementById('notification').style.display = 'none');
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModal(); });
+
+    console.log('✅ Sistema com Supabase sincronizado!');
+    console.log('📧 Login: proprietario@teste.com / 123456');
+});
+</script>
 </body>
 </html>
